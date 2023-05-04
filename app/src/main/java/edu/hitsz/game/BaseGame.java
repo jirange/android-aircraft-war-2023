@@ -68,15 +68,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
     /**
-     * 概率
-     * 指示普通敌机、精英敌机的产生分配的概率
-     */
-    protected double mobEnemyPro = 0.7;
-    protected double superEnemyPro = 1 - mobEnemyPro;
-
-
-
-    /**
      * 时间间隔(ms)，控制刷新频率
      */
     private int timeInterval = 16;
@@ -84,20 +75,37 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     private final HeroAircraft heroAircraft;
     private AbstractEnemyAircraft bossEnemy;
 
-
     protected final List<AbstractEnemyAircraft> enemyAircrafts;
-
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     private final List<BaseProp> props;
 
 
+    /**
+     * 游戏难度相关参数
+     * 普通敌机、精英敌机的产生分配的概率
+     */
     protected int enemyMaxNumber = 2;
+    protected double mobEnemyPro = 0.7;
+    protected double superEnemyPro = 1 - mobEnemyPro;
+
+    /**
+     * boss敌机相关参数
+     * scoreToBoss 生成BOSS敌机的阈值
+     */
     private int scoreToBoss = 100;
+    protected int bossHp = 150;
+    protected int bossHpAdd = 0;
+    protected int borderAddForBoss = 0;
 
 
     private boolean gameOverFlag = false;
     private int score = 0;
+
+    public int getTime() {
+        return time;
+    }
+
     private int time = 0;
 
 
@@ -105,8 +113,8 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
      * 周期（ms)
      * 控制英雄机射击周期，默认值设为简单模式
      */
-    private int cycleDuration = 600;
-    private int cycleTime = 0;
+    protected int cycleDuration = 600;
+    protected int cycleTime = 0;
 
 
 
@@ -146,29 +154,38 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
+//                if (enemyAircrafts.size() < enemyMaxNumber) {
+//                    Log.d("BaseGame","produceEnemy");
+//                    EnemyFactory factory;
+//                    AbstractEnemyAircraft enemy;
+//                    if (Math.random() <= superEnemyPro) {
+//                        factory = new SuperEnemyFactory();
+//                        enemy = factory.createEnemy(10,60);
+//                    } else {
+//                        factory = new MobEnemyFactory();
+//                        enemy = factory.createEnemy(10,30);
+//
+//                        //3/18
+//                    }
+//                    enemyAircrafts.add(enemy);
+//
+//                    /*enemyAircrafts.add(new MobEnemy(
+//                            (int) ( Math.random() * (MainActivity.screenWidth - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
+//                            (int) (Math.random() * MainActivity.screenHeight * 0.2),
+//                            0,
+//                            10,
+//                            30
+//                    ));*/
+//                }
+//                shootAction();
+
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     Log.d("BaseGame","produceEnemy");
-                    EnemyFactory factory;
-                    AbstractEnemyAircraft enemy;
-                    if (Math.random() <= superEnemyPro) {
-                        factory = new SuperEnemyFactory();
-                        enemy = factory.createEnemy(10,60);
-                    } else {
-                        factory = new MobEnemyFactory();
-                        enemy = factory.createEnemy(10,30);
 
-                        //3/18
-                    }
+                    AbstractEnemyAircraft enemy = getEnemyAircraft();
                     enemyAircrafts.add(enemy);
-
-                    /*enemyAircrafts.add(new MobEnemy(
-                            (int) ( Math.random() * (MainActivity.screenWidth - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
-                            (int) (Math.random() * MainActivity.screenHeight * 0.2),
-                            0,
-                            10,
-                            30
-                    ));*/
                 }
+                // 飞机射出子弹
                 shootAction();
             }
 
@@ -223,6 +240,9 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     }
 
     private boolean timeCountAndNewCycleJudge() {
+        // 控制游戏难度
+        controlDifficulty();
+
         cycleTime += timeInterval;
         if (cycleTime >= cycleDuration && cycleTime - timeInterval < cycleTime) {
             // 跨越到新的周期
@@ -232,27 +252,41 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             return false;
         }
     }
+
+    /**
+     * 控制游戏难度 如周期，最大敌机数量，普通敌机概率，精英敌机概率，敌机血量增，敌机速度增幅
+     * cycleDuration,enemyMaxNumber,mobEnemyPro,superEnemyPro, enemyHpAdd, enemySpeedAdd
+     */
+    protected abstract void controlDifficulty();
+
     /**
      * 监听 创建Boss敌机对象
      */
     public  void creatBossEnemy(){
-        synchronized (BaseGame.class) {
+        synchronized (this) {
             EnemyFactory factory;
             // 分数达到设定阈值后出现BOSS敌机，可多次出现
             if (score >= scoreToBoss) {
                 if (bossEnemy == null || bossEnemy.notValid()) {
                     factory = new BossEnemyFactory();
-                    bossEnemy = factory.createEnemy(5,BossEnemyFactory.bossHP);
-                    System.out.println("敌机血量为" + bossEnemy.getHp());
+                    bossEnemy = factory.createEnemy(5, bossHp);
+                    bossHp += bossHpAdd;
+                    System.out.println("boss敌机血量为" + bossEnemy.getHp());
                     //设置为散射弹道
                     bossEnemy.setShootStrategy(new ScatteringShoot());
                     enemyAircrafts.add(bossEnemy);
-                    scoreToBoss+=200;
+                    scoreToBoss += borderAddForBoss;
                 }
             }
         }
     }
 
+    /**
+     * 生成普通敌机
+     * 简单模式 难度不变 普通和困难模式 难度要变
+     * @return 敌机对象
+     */
+    protected abstract AbstractEnemyAircraft getEnemyAircraft() ;
 
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
