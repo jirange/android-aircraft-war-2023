@@ -15,16 +15,31 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.hitsz.ImageManager;
+import edu.hitsz.activity.GameActivity;
 import edu.hitsz.activity.MainActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
-import edu.hitsz.aircraft.MobEnemy;
+import edu.hitsz.aircraft.enemy.AbstractEnemyAircraft;
+import edu.hitsz.aircraft.enemy.MobEnemy;
+import edu.hitsz.aircraft.enemy.factory.BossEnemyFactory;
+import edu.hitsz.aircraft.enemy.factory.EnemyFactory;
+import edu.hitsz.aircraft.enemy.factory.MobEnemyFactory;
+import edu.hitsz.aircraft.enemy.factory.SuperEnemyFactory;
 import edu.hitsz.basic.AbstractFlyingObject;
-import edu.hitsz.bullet.AbstractBullet;
+import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.leaderboards.PlayerRecord;
+import edu.hitsz.leaderboards.RecordDaoImpl;
+import edu.hitsz.observer.Subscriber;
+import edu.hitsz.prop.BaseProp;
+import edu.hitsz.prop.BombProp;
+import edu.hitsz.strategy.shoot.DirectShoot;
+import edu.hitsz.strategy.shoot.ScatteringShoot;
 
 /**
  * 游戏逻辑抽象基类，遵循模板模式，action() 为模板方法
@@ -52,6 +67,14 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     protected Bitmap backGround;
 
 
+    /**
+     * 概率
+     * 指示普通敌机、精英敌机的产生分配的概率
+     */
+    protected double mobEnemyPro = 0.7;
+    protected double superEnemyPro = 1 - mobEnemyPro;
+
+
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -59,13 +82,19 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     private int timeInterval = 16;
 
     private final HeroAircraft heroAircraft;
+    private AbstractEnemyAircraft bossEnemy;
 
-    protected final List<AbstractAircraft> enemyAircrafts;
 
-    private final List<AbstractBullet> heroBullets;
-    private final List<AbstractBullet> enemyBullets;
+    protected final List<AbstractEnemyAircraft> enemyAircrafts;
+
+    private final List<BaseBullet> heroBullets;
+    private final List<BaseBullet> enemyBullets;
+    private final List<BaseProp> props;
+
 
     protected int enemyMaxNumber = 2;
+    private int scoreToBoss = 100;
+
 
     private boolean gameOverFlag = false;
     private int score = 0;
@@ -94,12 +123,16 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         // 初始化英雄机
         heroAircraft = HeroAircraft.getHeroAircraft();
         heroAircraft.setHp(1000);
+//        heroAircraft.setShootStrategy(new DirectShoot());
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
+        props = new LinkedList<>();
+
 
         heroController();
+        //todo 开启bgm
     }
     /**
      * 游戏启动入口，执行游戏逻辑
@@ -115,13 +148,26 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             if (timeCountAndNewCycleJudge()) {
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     Log.d("BaseGame","produceEnemy");
-                   enemyAircrafts.add(new MobEnemy(
+                    EnemyFactory factory;
+                    AbstractEnemyAircraft enemy;
+                    if (Math.random() <= superEnemyPro) {
+                        factory = new SuperEnemyFactory();
+                        enemy = factory.createEnemy(10,60);
+                    } else {
+                        factory = new MobEnemyFactory();
+                        enemy = factory.createEnemy(10,30);
+
+                        //3/18
+                    }
+                    enemyAircrafts.add(enemy);
+
+                    /*enemyAircrafts.add(new MobEnemy(
                             (int) ( Math.random() * (MainActivity.screenWidth - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
                             (int) (Math.random() * MainActivity.screenHeight * 0.2),
                             0,
                             10,
                             30
-                    ));
+                    ));*/
                 }
                 shootAction();
             }
@@ -133,11 +179,15 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
                 // 撞击检测
                 try {
-
                     crashCheckAction();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                //BOSS敌机生成
+                creatBossEnemy();
+
+
                 // 后处理
                 postProcessAction();
 
@@ -152,19 +202,13 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     }
 
     public void heroController(){
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                clickX = motionEvent.getX();
-                clickY = motionEvent.getY();
-                heroAircraft.setLocation(clickX, clickY);
+        setOnTouchListener((view, motionEvent) -> {
+            clickX = motionEvent.getX();
+            clickY = motionEvent.getY();
+            heroAircraft.setLocation(clickX, clickY);
 
-                if ( clickX<0 || clickX> MainActivity.screenWidth || clickY<0 || clickY>MainActivity.screenHeight){
-                    // 防止超出边界
-                    return false;
-                }
-                return true;
-            }
+            // 防止超出边界
+            return !(clickX < 0) && !(clickX > MainActivity.screenWidth) && !(clickY < 0) && !(clickY > MainActivity.screenHeight);
         });
     }
 
@@ -172,6 +216,10 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     private void shootAction() {
         // 英雄射击
         heroBullets.addAll(heroAircraft.shoot());
+        // 敌机射击
+        for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+            enemyBullets.addAll(enemyAircraft.shoot());
+        }
     }
 
     private boolean timeCountAndNewCycleJudge() {
@@ -184,12 +232,33 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             return false;
         }
     }
+    /**
+     * 监听 创建Boss敌机对象
+     */
+    public  void creatBossEnemy(){
+        synchronized (BaseGame.class) {
+            EnemyFactory factory;
+            // 分数达到设定阈值后出现BOSS敌机，可多次出现
+            if (score >= scoreToBoss) {
+                if (bossEnemy == null || bossEnemy.notValid()) {
+                    factory = new BossEnemyFactory();
+                    bossEnemy = factory.createEnemy(5,BossEnemyFactory.bossHP);
+                    System.out.println("敌机血量为" + bossEnemy.getHp());
+                    //设置为散射弹道
+                    bossEnemy.setShootStrategy(new ScatteringShoot());
+                    enemyAircrafts.add(bossEnemy);
+                    scoreToBoss+=200;
+                }
+            }
+        }
+    }
+
 
     private void bulletsMoveAction() {
-        for (AbstractBullet bullet : heroBullets) {
+        for (BaseBullet bullet : heroBullets) {
             bullet.forward();
         }
-        for (AbstractBullet bullet : enemyBullets) {
+        for (BaseBullet bullet : enemyBullets) {
             bullet.forward();
         }
     }
@@ -210,7 +279,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
      */
     private void crashCheckAction() throws InterruptedException {
         // 敌机子弹攻击英雄
-        for (AbstractBullet bullet : enemyBullets) {
+        for (BaseBullet bullet : enemyBullets) {
             if (bullet.notValid()) {
                 continue;
             }
@@ -221,23 +290,37 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         }
 
         // 英雄子弹攻击敌机
-        for (AbstractBullet bullet : heroBullets) {
+        for (BaseBullet bullet : heroBullets) {
             if (bullet.notValid()) {
                 continue;
             }
-            for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+            for (AbstractEnemyAircraft enemyAircraft : enemyAircrafts) {
                 if (enemyAircraft.notValid()) {
                     // 已被其他子弹击毁的敌机，不再检测
                     // 避免多个子弹重复击毁同一敌机的判定
                     continue;
                 }
                 if (enemyAircraft.crash(bullet)) {
+                    //todo 加载被击中音效
+
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
 
 
                     bullet.vanish();
+                    if (enemyAircraft.notValid()) {
+
+
+                        // TODO 获得分数，产生道具补给
+                        //普通敌机 坠毁+10分  精英敌机+20  boss敌机+80
+                        score += enemyAircraft.getCrashScore();
+                        //产生道具补给   敌机坠毁后，以一定概率随机掉落某种道具
+                        List<BaseProp> baseProps = enemyAircraft.dropProp();
+                        if (baseProps != null) {
+                            props.addAll(baseProps);
+                        }
+                    }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
                 if (enemyAircraft.crash(heroAircraft) || heroAircraft.crash(enemyAircraft)) {
@@ -248,6 +331,31 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         }
 
         // 我方获得补给
+        for (BaseProp prop : props) {
+            if (prop.notValid()) {
+                continue;
+            }
+            if (heroAircraft.crash(prop)) {
+                //todo 将英雄机加入炸弹观察者清单
+                if (prop instanceof BombProp) {
+                    ArrayList<Subscriber> subscribers = new ArrayList<>();
+                    subscribers.addAll(enemyBullets);
+                    subscribers.addAll(enemyAircrafts);
+                    subscribers.add(heroAircraft);
+                    ((BombProp) prop).setSubscribers(subscribers);
+                    for (AbstractEnemyAircraft enemy : enemyAircrafts) {
+                        score += enemy.getCrashScore();
+                    }
+                }
+                // 英雄碰到道具
+                // 道具生效
+                //todo 道具生效音效
+
+
+                prop.activeProp(heroAircraft);
+                prop.vanish();
+            }
+        }
     }
     /**
      * 后处理：
@@ -263,9 +371,18 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
 
         if (heroAircraft.notValid()) {
+            //todo 游戏结束音效响起来
+            //todo 关闭音乐bgm
+
             gameOverFlag = true;
             mbLoop = false;
             Log.i(TAG, "heroAircraft is not Valid");
+            //todo 打印游戏记录排行榜
+            RecordDaoImpl recordDao = new RecordDaoImpl();
+            Date date = new Date();
+            PlayerRecord userRecord = new PlayerRecord(GameActivity.difficulty, score, date);
+            System.out.println("玩家得分：" + userRecord.toString());
+            recordDao.addAfterEnd(userRecord);
 
         }
 

@@ -6,6 +6,8 @@ import android.os.Handler;
 import edu.hitsz.ImageManager;
 
 public class EasyGame extends BaseGame{
+    public  static  int GameDifficulty=1;
+
 
     public EasyGame(Context context, Handler handler) {
         super(context,handler);

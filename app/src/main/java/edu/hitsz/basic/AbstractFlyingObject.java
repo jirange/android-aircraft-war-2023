@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import edu.hitsz.ImageManager;
 import edu.hitsz.activity.MainActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
+import edu.hitsz.observer.Subscriber;
 
 
 /**
@@ -12,7 +13,7 @@ import edu.hitsz.aircraft.AbstractAircraft;
  *
  * @author hitsz
  */
-public abstract class AbstractFlyingObject {
+public abstract class AbstractFlyingObject  implements Subscriber {
 
     //locationX、locationY为图片中心位置坐标
     /**

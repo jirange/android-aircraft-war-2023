@@ -16,6 +16,7 @@ import edu.hitsz.game.MediumGame;
 
 public class GameActivity extends AppCompatActivity {
     private static final String TAG = "GameActivity";
+    public static  int difficulty = 1;
 
     private int gameType=0;
 
@@ -36,15 +37,19 @@ public class GameActivity extends AppCompatActivity {
         };
         if(getIntent() != null){
             gameType = getIntent().getIntExtra("gameType",1);
+
         }
         BaseGame basGameView;
         if(gameType == 1){
             basGameView = new MediumGame(this,handler);
+            difficulty=2;
 
         }else if(gameType == 3){
             basGameView = new HardGame(this,handler);
+            difficulty=3;
         }else{
             basGameView = new EasyGame(this,handler);
+            difficulty=1;
         }
         setContentView(basGameView);
     }

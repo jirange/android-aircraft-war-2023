@@ -6,6 +6,8 @@ import android.os.Handler;
 import edu.hitsz.ImageManager;
 
 public class MediumGame extends BaseGame{
+    public  static  int GameDifficulty=2;
+
     public MediumGame(Context context, Handler handler) {
         super(context,handler);
         this.backGround = ImageManager.BACKGROUND2_IMAGE;

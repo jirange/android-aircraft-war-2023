@@ -1,12 +1,11 @@
 package edu.hitsz.aircraft;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import edu.hitsz.ImageManager;
 import edu.hitsz.activity.MainActivity;
-import edu.hitsz.bullet.AbstractBullet;
-import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.strategy.shoot.DirectShoot;
 
 /**
  * 英雄飞机，游戏玩家操控，遵循单例模式（singleton)
@@ -37,6 +36,7 @@ public class HeroAircraft extends AbstractAircraft {
         this.power = 30;
         this.direction = -1;
         this.rate = 1.5;
+        this.setShootStrategy(new DirectShoot());
     }
 
 
@@ -62,19 +62,7 @@ public class HeroAircraft extends AbstractAircraft {
     }
 
     @Override
-    public  List<AbstractBullet> shoot() {
-        List<AbstractBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        int y = this.getLocationY() + direction*2;
-        int speedX = 0;
-        int speedY = this.getSpeedY() + direction*5;
-        AbstractBullet abstractBullet;
-        for(int i=0; i<shootNum; i++){
-            // 子弹发射位置相对飞机位置向前偏移
-            // 多个子弹横向分散
-            abstractBullet = new HeroBullet(x + (i*2 - shootNum + 1)*10, y, speedX, speedY, power);
-            res.add(abstractBullet);
-        }
-        return res;
+    public void update() {
+        return;
     }
 }

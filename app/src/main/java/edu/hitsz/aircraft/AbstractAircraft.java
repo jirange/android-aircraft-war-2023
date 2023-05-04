@@ -5,7 +5,8 @@ package edu.hitsz.aircraft;
 import java.util.List;
 
 import edu.hitsz.basic.AbstractFlyingObject;
-import edu.hitsz.bullet.AbstractBullet;
+import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.strategy.shoot.ShootStrategy;
 
 /**
  * 所有种类飞机的抽象父类：
@@ -33,6 +34,8 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     protected int power = 30;
     protected int direction = -1;
     protected double rate = 1.5;
+    private ShootStrategy shootStrategy;
+
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY);
@@ -54,6 +57,16 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         }
     }
 
+    /**
+     * 加血   加血道具加血
+     */
+    public void increaseHp(int increase){
+        hp += increase;
+        if(hp >= maxHp){
+            hp=maxHp;
+        }
+    }
+
 
     public int getHp() {
         return hp;
@@ -71,7 +84,12 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
      *  可射击对象需实现，返回子弹
      *  非可射击对象空实现，返回null
      */
-    public abstract List<AbstractBullet> shoot();
+    public List<BaseBullet> shoot(){
+        return shootStrategy.doShoot(locationX,locationY,speedX,speedY,direction,shootNum);
+    }
+    public void setShootStrategy(ShootStrategy shootStrategy) {
+        this.shootStrategy = shootStrategy;
+    }
 
 }
 
