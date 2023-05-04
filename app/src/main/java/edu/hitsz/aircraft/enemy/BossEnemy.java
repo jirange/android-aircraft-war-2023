@@ -1,11 +1,7 @@
 package edu.hitsz.aircraft.enemy;
 
-import edu.hitsz.ImageManager;
-import edu.hitsz.activity.MainActivity;
-import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.prop.*;
 import edu.hitsz.strategy.shoot.ScatteringShoot;
-import edu.hitsz.thread.MusicThread;
 
 import java.util.LinkedList;
 import java.util.List;

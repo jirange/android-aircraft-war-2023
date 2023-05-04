@@ -2,7 +2,7 @@ package edu.hitsz.prop;
 
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.observer.Subscriber;
-import edu.hitsz.thread.MusicThread;
+import edu.hitsz.music.MusicThread;
 
 import java.util.ArrayList;
 import java.util.List;

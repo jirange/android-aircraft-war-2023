@@ -1,6 +1,8 @@
 package edu.hitsz.game;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,6 +37,7 @@ import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.leaderboards.PlayerRecord;
 import edu.hitsz.leaderboards.RecordDaoImpl;
+import edu.hitsz.music.MusicService;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.prop.BaseProp;
 import edu.hitsz.prop.BombProp;
@@ -85,7 +88,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
      * 游戏难度相关参数
      * 普通敌机、精英敌机的产生分配的概率
      */
-    protected int enemyMaxNumber = 2;
+    protected int enemyMaxNumber = 5;//2;
     protected double mobEnemyPro = 0.7;
     protected double superEnemyPro = 1 - mobEnemyPro;
 
@@ -141,6 +144,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
         heroController();
         //todo 开启bgm
+
     }
     /**
      * 游戏启动入口，执行游戏逻辑
