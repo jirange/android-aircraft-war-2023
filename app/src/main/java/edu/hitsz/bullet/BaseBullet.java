@@ -11,9 +11,7 @@ import edu.hitsz.basic.AbstractFlyingObject;
  * @author hitsz
  */
 public abstract class BaseBullet extends AbstractFlyingObject{
-
-
-    private int power;
+    protected int power;
 
     public BaseBullet(int locationX, int locationY, int speedX, int speedY, int power) {
         super(locationX, locationY, speedX, speedY);
@@ -47,6 +45,4 @@ public abstract class BaseBullet extends AbstractFlyingObject{
     public int getPower() {
         return power;
     }
-
-    public abstract void setPower(int power);
 }
