@@ -1,5 +1,6 @@
 package edu.hitsz.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -52,6 +53,10 @@ public class GameActivity extends AppCompatActivity {
             difficulty=1;
         }
         setContentView(basGameView);
+
+//        Intent intent = new Intent(this, MusicService.class);
+//        intent.putExtra("action","play");
+//        startService(intent);
     }
 
 

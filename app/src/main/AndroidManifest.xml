@@ -11,6 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AircraftWar2023" >
+        <!--  新加的-->
+        <service
+            android:name="edu.hitsz.music.MusicService"
+            android:enabled="true"
+            android:exported="true"></service>
         <activity
             android:name="edu.hitsz.activity.GameActivity"
             android:exported="false" />

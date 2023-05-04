@@ -10,6 +10,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import edu.hitsz.R;
+import edu.hitsz.music.MusicService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     public static int screenHeight;
 
     private int gameType=0;
+    Intent musicIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,22 +32,32 @@ public class MainActivity extends AppCompatActivity {
         getScreenHW();
 
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
+
+        Intent musicIntent = new Intent(this, MusicService.class);
+
+
         medium_btn.setOnClickListener(view -> {
             gameType=1;
             intent.putExtra("gameType",gameType);
             startActivity(intent);
+            musicIntent.putExtra("action","play");
+            startService(musicIntent);
         });
 
         easy_btn.setOnClickListener(view -> {
             gameType =2;
             intent.putExtra("gameType",gameType);
             startActivity(intent);
+            musicIntent.putExtra("action","play");
+            startService(musicIntent);
         });
 
         hard_btn.setOnClickListener(view -> {
             gameType =3;
             intent.putExtra("gameType",gameType);
             startActivity(intent);
+            musicIntent.putExtra("action","play");
+            startService(musicIntent);
         });
     }
     public void getScreenHW(){

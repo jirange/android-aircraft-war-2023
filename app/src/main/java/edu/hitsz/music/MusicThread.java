@@ -1,9 +1,9 @@
-package edu.hitsz.thread;
+package edu.hitsz.music;
 
 import android.media.*;
 
 //import javax.sound.sampled.*;
-import java.io.*;
+
 
 /**
  * @author leng
