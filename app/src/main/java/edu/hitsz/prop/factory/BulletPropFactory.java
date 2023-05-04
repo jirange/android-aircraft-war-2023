@@ -9,6 +9,6 @@ import edu.hitsz.prop.BulletProp;
 public class BulletPropFactory implements PropFactory{
     @Override
     public BaseProp createProp(int locationX, int locationY) {
-        return new BulletProp(locationX, locationY, 5);
+        return new BulletProp(locationX, locationY, 10);
     }
 }

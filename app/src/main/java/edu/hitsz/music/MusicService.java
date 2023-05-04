@@ -13,6 +13,7 @@ import java.util.HashMap;
 import edu.hitsz.R;
 
 public class MusicService extends Service {
+
     private HashMap<Integer, Integer> soundID = new HashMap<Integer, Integer>();
     private static  final String TAG = "MusicService";
     public MusicService() {
@@ -40,6 +41,7 @@ public class MusicService extends Service {
     public void playMusic(){
         if(player == null){
             player = MediaPlayer.create(this, R.raw.bgm);
+            player.setLooping(true);
         }
         player.start();
 

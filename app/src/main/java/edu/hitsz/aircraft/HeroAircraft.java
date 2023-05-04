@@ -56,13 +56,18 @@ public class HeroAircraft extends AbstractAircraft {
         return heroAircraft;
     }
 
+    /**
+     * 设置为空 重新来
+     */
+    public static void setHeroAircraftNull(){
+        heroAircraft=null;
+    }
+
     @Override
     public void forward() {
         // 英雄机由鼠标控制，不通过forward函数移动
     }
 
     @Override
-    public void update() {
-        return;
-    }
+    public void update() {}
 }

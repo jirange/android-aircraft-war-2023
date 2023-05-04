@@ -1,5 +1,6 @@
 package edu.hitsz.prop;
 
+import edu.hitsz.activity.GameActivity;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.music.MusicThread;
@@ -60,7 +61,9 @@ public class BombProp extends BaseProp {
     public void activeProp(HeroAircraft heroAircraft) {
 //        System.out.println("BombSupply active!");
         //todo 炸弹爆炸音效
-        new MusicThread("src/videos/bomb_explosion.wav").start();
+        GameActivity.mysp.play(GameActivity.soundPoolMap.get("bomb_explosion"),1,1,0,0,1);
+
+//        new MusicThread("src/videos/bomb_explosion.wav").start();
         notifyAllSubscribers();
 
     }

@@ -11,6 +11,7 @@ import edu.hitsz.aircraft.enemy.factory.SuperEnemyFactory;
 
 public class EasyGame extends BaseGame{
     public  static  int GameDifficulty=1;
+    public static final String TAG = "EasyGame";
 
 
     public EasyGame(Context context, Handler handler) {

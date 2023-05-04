@@ -17,8 +17,6 @@ public class BloodProp extends BaseProp{
         super(locationX,locationY,propSpeed);
     }
 
-    public BloodProp() {
-    }
 
     @Override
     public void activeProp(HeroAircraft heroAircraft) {

@@ -20,21 +20,21 @@ public class BulletProp extends BaseProp {
 
     @Override
     public void activeProp(HeroAircraft heroAircraft) {
-//        System.out.println("FireSupply active!");
+        System.out.println("FireSupply active!");
 //让直射线程暂停五秒 散射线程持续五秒后关闭
-        Runnable scatteringRun = () -> {
-            synchronized (BulletProp.class) {
-                heroAircraft.setShootStrategy(new ScatteringShoot());
-                try {
-                    BulletProp.class.wait(5000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                heroAircraft.setShootStrategy(new DirectShoot());
-            }
-        };
-        //todo 开启散射线程
-        new Thread(scatteringRun).start();
+//        Runnable scatteringRun = () -> {
+//            synchronized (BulletProp.class) {
+//                heroAircraft.setShootStrategy(new ScatteringShoot());
+//                try {
+//                    BulletProp.class.wait(5000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                heroAircraft.setShootStrategy(new DirectShoot());
+//            }
+//        };
+//        //todo 开启散射线程
+//        new Thread(scatteringRun).start();
 
 //        ScheduledExecutorService executorService= new ScheduledThreadPoolExecutor(1,
 //                new BasicThreadFactory.Builder().namingPattern("bullet-prop-action-%d").daemon(true).build());

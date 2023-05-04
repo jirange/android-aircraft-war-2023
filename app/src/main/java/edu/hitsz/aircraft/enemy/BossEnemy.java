@@ -1,5 +1,6 @@
 package edu.hitsz.aircraft.enemy;
 
+import edu.hitsz.activity.GameActivity;
 import edu.hitsz.prop.*;
 import edu.hitsz.strategy.shoot.ScatteringShoot;
 
@@ -17,9 +18,8 @@ public class BossEnemy extends AbstractEnemyAircraft {
      * 道具一次掉落数量
      */
     private int dropNum = 3;
+    int bgm_boss_id;
 
-
-//    public MusicThread bossBgmThread;
 
     public BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
@@ -31,11 +31,8 @@ public class BossEnemy extends AbstractEnemyAircraft {
         this.crashScore=80;
         this.setShootStrategy(new ScatteringShoot());
         //todo boss出现音效
-//
-//        bossBgmThread = new MusicThread("src/videos/bgm_boss.wav");
-//        bossBgmThread.setLoop(true);
-//        bossBgmThread.setToEnd(false);
-//        bossBgmThread.start();
+        bgm_boss_id = GameActivity.mysp.play(GameActivity.soundPoolMap.get("bgm_boss"), 1, 1, 0, -1, 1);
+
     }
 
     @Override
@@ -70,7 +67,7 @@ public class BossEnemy extends AbstractEnemyAircraft {
     public void vanish() {
         isValid = false;
         //todo 停止播放boss-bgm
-//        bossBgmThread.setToEnd(true);
+        GameActivity.mysp.stop(bgm_boss_id);
     }
 
     /**

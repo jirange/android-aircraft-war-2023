@@ -9,6 +9,6 @@ import edu.hitsz.prop.BombProp;
 public class BombPropFactory implements PropFactory{
     @Override
     public BaseProp createProp(int locationX, int locationY) {
-        return new BombProp(locationX, locationY, 5);
+        return new BombProp(locationX, locationY, 10);
     }
 }
