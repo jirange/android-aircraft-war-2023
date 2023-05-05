@@ -111,9 +111,11 @@ public class RecordsActivity extends AppCompatActivity {
         ArrayList<HashMap<String, String>> data = new ArrayList<>();
         List<PlayerRecord> allRecords = recordsDaoDB.getAllRecords(difficulty);
         if (allRecords != null && allRecords.size() != 0) {
+            int i = 0;
             for (PlayerRecord record : allRecords) {
+                i++;
                 HashMap<String, String> map = new HashMap<>();
-                map.put("rank", String.valueOf(record.getRanking()));
+                map.put("rank", String.valueOf(i));
                 map.put("name", record.getPlayerName());
                 map.put("score", String.valueOf(record.getScore()));
                 map.put("date", record.getRecordTimeStr());
