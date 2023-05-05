@@ -3,6 +3,7 @@ package edu.hitsz.game;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,6 +22,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,7 @@ import edu.hitsz.ImageManager;
 import edu.hitsz.R;
 import edu.hitsz.activity.GameActivity;
 import edu.hitsz.activity.MainActivity;
+import edu.hitsz.activity.RecordsActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.enemy.AbstractEnemyAircraft;
@@ -460,6 +463,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
             gameOverFlag = true;
+
             mbLoop = false;
             Log.i(TAG, "heroAircraft is not Valid");
 
@@ -470,6 +474,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             System.out.println("玩家得分：" + userRecord.toString());
             recordDao.addAfterEnd(userRecord);
 
+            //todo 询问是否加入排行榜
         }
 
     }
@@ -564,6 +569,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         }
         Message message = Message.obtain();
         message.what = 1;
+        message.obj = score;
         handler.sendMessage(message);
     }
 

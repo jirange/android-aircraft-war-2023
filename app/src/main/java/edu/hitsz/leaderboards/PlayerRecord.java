@@ -5,6 +5,7 @@ package edu.hitsz.leaderboards;
 //import edu.hitsz.application.Main;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,6 +46,8 @@ public class PlayerRecord implements Serializable {
 
     public PlayerRecord() {
     }
+
+
 
     public PlayerRecord(int difficulty, int ranking, String playerName, int score, Date recordTime) {
         this.difficulty = difficulty;
@@ -136,7 +139,14 @@ public class PlayerRecord implements Serializable {
     public Date getRecordTime() {
         return recordTime;
     }
-
+    /**
+     * 获取  字符串
+     * @return recordTime  string
+     */
+    public String getRecordTimeStr() {
+        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+        return format.format(recordTime);
+    }
     /**
      * 设置
      */
@@ -145,9 +155,25 @@ public class PlayerRecord implements Serializable {
     }
 
 
-    public String toString() {
+    public void setRecordTime(String recordTime) {
         SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
-//        return Main.getDifficultyStr(Main.difficulty)+": " + score + ", " + format.format(recordTime);
-        return GameActivity.difficulty+": " + score + ", " + format.format(recordTime);
+        try {
+            this.recordTime = format.parse(recordTime);
+        } catch (ParseException e) {
+            System.out.println("字符串解析出现错误！！！");
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    public String toString() {
+        return "PlayerRecord{" +
+                "difficulty=" + difficulty +
+                ", ranking=" + ranking +
+                ", playerName='" + playerName + '\'' +
+                ", score=" + score +
+                ", recordTime=" + getRecordTimeStr() +
+                '}';
+    }
+
 }

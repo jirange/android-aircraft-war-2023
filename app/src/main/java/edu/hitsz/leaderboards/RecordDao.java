@@ -16,7 +16,7 @@ public interface RecordDao {
      * 获取所有玩家数据记录
      * @return 玩家记录列表
      */
-    List<PlayerRecord> getAllRecords();
+    List<PlayerRecord> getAllRecords(int diff);
 
     /**
      * 按照玩家姓名删除玩家记录
@@ -30,10 +30,6 @@ public interface RecordDao {
      */
     void doDeleteByRanking(int ranking);
 
-    /**
-     * 打印所有记录数据
-     */
-    void printAll();
 
 
 }

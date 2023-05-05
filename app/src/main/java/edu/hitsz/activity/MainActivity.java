@@ -38,15 +38,12 @@ public class MainActivity extends AppCompatActivity {
             gameType=1;
             intent.putExtra("gameType",gameType);
             startActivity(intent);
-
-
         });
 
         easy_btn.setOnClickListener(view -> {
             gameType =2;
             intent.putExtra("gameType",gameType);
             startActivity(intent);
-
         });
 
         hard_btn.setOnClickListener(view -> {

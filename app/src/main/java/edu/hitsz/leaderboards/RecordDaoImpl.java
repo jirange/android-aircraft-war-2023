@@ -60,7 +60,7 @@ public class RecordDaoImpl implements RecordDao {
     }
 
     @Override
-    public List<PlayerRecord> getAllRecords() {
+    public List<PlayerRecord> getAllRecords(int diff) {
         return playerRecords;
     }
 
@@ -89,7 +89,7 @@ public class RecordDaoImpl implements RecordDao {
 
     }
 
-    @Override
+
     public void printAll() {
         sortByScore();
         System.out.println(playerRecords);

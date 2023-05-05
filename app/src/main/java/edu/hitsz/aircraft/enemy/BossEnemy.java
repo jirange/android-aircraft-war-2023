@@ -12,8 +12,6 @@ import java.util.List;
  */
 public class BossEnemy extends AbstractEnemyAircraft {
 
-
-
     /**
      * 道具一次掉落数量
      */
