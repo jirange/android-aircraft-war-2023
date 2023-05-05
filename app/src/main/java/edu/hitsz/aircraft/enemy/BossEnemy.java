@@ -1,6 +1,7 @@
 package edu.hitsz.aircraft.enemy;
 
 import edu.hitsz.activity.GameActivity;
+import edu.hitsz.music.MySoundPool;
 import edu.hitsz.prop.*;
 import edu.hitsz.strategy.shoot.ScatteringShoot;
 
@@ -29,7 +30,8 @@ public class BossEnemy extends AbstractEnemyAircraft {
         this.crashScore=80;
         this.setShootStrategy(new ScatteringShoot());
         //todo boss出现音效
-        bgm_boss_id = GameActivity.mysp.play(GameActivity.soundPoolMap.get("bgm_boss"), 1, 1, 0, -1, 1);
+//        bgm_boss_id = GameActivity.mysp.play(GameActivity.soundPoolMap.get("bgm_boss"), 1, 1, 0, -1, 1);
+        bgm_boss_id = MySoundPool.playMusic("bgm_boss",true);
 
     }
 
@@ -65,7 +67,8 @@ public class BossEnemy extends AbstractEnemyAircraft {
     public void vanish() {
         isValid = false;
         //todo 停止播放boss-bgm
-        GameActivity.mysp.stop(bgm_boss_id);
+//        GameActivity.mysp.stop(bgm_boss_id);
+        MySoundPool.mysp.stop(bgm_boss_id);
     }
 
     /**

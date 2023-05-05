@@ -1,7 +1,10 @@
 package edu.hitsz.prop;
 
+import android.util.Log;
+
 import edu.hitsz.activity.GameActivity;
 import edu.hitsz.aircraft.HeroAircraft;
+import edu.hitsz.music.MySoundPool;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.music.MusicThread;
 
@@ -55,15 +58,13 @@ public class BombProp extends BaseProp {
     /**
      * 炸弹道具生效
      * mainBusinessLogic
-     * @param heroAircraft
+     * @param heroAircraft 碰到炸弹的英雄减血
      */
     @Override
     public void activeProp(HeroAircraft heroAircraft) {
-//        System.out.println("BombSupply active!");
+        Log.i("BombProp","active!");
         //todo 炸弹爆炸音效
-        GameActivity.mysp.play(GameActivity.soundPoolMap.get("bomb_explosion"),1,1,0,0,1);
-
-//        new MusicThread("src/videos/bomb_explosion.wav").start();
+        MySoundPool.playMusic("bomb_explosion");
         notifyAllSubscribers();
 
     }

@@ -48,6 +48,7 @@ import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.leaderboards.PlayerRecord;
 import edu.hitsz.leaderboards.RecordDaoImpl;
 import edu.hitsz.music.MusicService;
+import edu.hitsz.music.MySoundPool;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.prop.BaseProp;
 import edu.hitsz.prop.BombProp;
@@ -357,7 +358,8 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             }
             if (heroAircraft.crash(bullet)) {
                 //todo 加载被击中音效
-                GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
+                MySoundPool.playMusic("bullet_hit");
+//                GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
             }
@@ -376,7 +378,8 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 }
                 if (enemyAircraft.crash(bullet)) {
                     //todo 加载被击中音效
-                    GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
+                    MySoundPool.playMusic("bullet_hit");
+//                    GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
 
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
@@ -425,7 +428,9 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 // 英雄碰到道具
                 // 道具生效
                 //todo 道具生效音效
-                GameActivity.mysp.play(GameActivity.soundPoolMap.get("get_supply"), 1, 1, 0, 0, 1);
+                MySoundPool.playMusic("get_supply");
+
+//                GameActivity.mysp.play(GameActivity.soundPoolMap.get("get_supply"), 1, 1, 0, 0, 1);
 
                 System.out.println(prop.getSpeedY());
                 prop.activeProp(heroAircraft);
@@ -455,7 +460,8 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 bossEnemy.vanish();
             }
             //todo 游戏结束音效响起来
-            GameActivity.mysp.play(GameActivity.soundPoolMap.get("game_over"), 1, 1, 0, 0, 1);
+//            GameActivity.mysp.play(GameActivity.soundPoolMap.get("game_over"), 1, 1, 0, 0, 1);
+            MySoundPool.playMusic("game_over");
 
             //todo 关闭音乐bgm
 //            GameActivity.mysp.stop(bgm_id);
@@ -467,12 +473,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             mbLoop = false;
             Log.i(TAG, "heroAircraft is not Valid");
 
-            //todo 打印游戏记录排行榜
-            RecordDaoImpl recordDao = new RecordDaoImpl();
-            Date date = new Date();
-            PlayerRecord userRecord = new PlayerRecord(GameActivity.difficulty, score, date);
-            System.out.println("玩家得分：" + userRecord.toString());
-            recordDao.addAfterEnd(userRecord);
+//            //todo 打印游戏记录排行榜
+//            RecordDaoImpl recordDao = new RecordDaoImpl();
+//            Date date = new Date();
+//            PlayerRecord userRecord = new PlayerRecord(GameActivity.difficulty, score, date);
+//            System.out.println("玩家得分：" + userRecord);
+//            recordDao.addAfterEnd(userRecord);
 
             //todo 询问是否加入排行榜
         }
