@@ -48,5 +48,18 @@ android:orientation="vertical">
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         ></Button>
+
 </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/video_btn"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="200dp"
+        android:text="@string/have_video"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:typeface="serif"></CheckBox>
+
 </LinearLayout>

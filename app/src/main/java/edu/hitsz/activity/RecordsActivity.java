@@ -47,7 +47,8 @@ public class RecordsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_leaderboards);
         //获得Layout里面的TextView 设置标题 显示难度
         TextView titleView = (TextView) findViewById(R.id.title);
-        titleView.setText("difficulty: "+difficulty);
+        titleView.setText(PlayerRecord.getDifficultyStr(difficulty));
+//        titleView.setText("@String/MediumGame");
         update();
 
         //todo 询问是否加入记录
@@ -134,7 +135,7 @@ public class RecordsActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("请输入你的姓名 不可重复")
                 .setMessage("确定将此条游戏记录加入排行榜？")
-                .setIcon(android.R.drawable.ic_dialog_info)
+//                .setIcon(android.R.drawable.ic_dialog_info)
                 .setView(edt)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {

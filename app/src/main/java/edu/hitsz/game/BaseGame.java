@@ -464,7 +464,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             MySoundPool.playMusic("game_over");
 
             //todo 关闭音乐bgm
-//            GameActivity.mysp.stop(bgm_id);
             getContext().stopService(musicIntent);
 
 
@@ -472,15 +471,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
             mbLoop = false;
             Log.i(TAG, "heroAircraft is not Valid");
-
-//            //todo 打印游戏记录排行榜
-//            RecordDaoImpl recordDao = new RecordDaoImpl();
-//            Date date = new Date();
-//            PlayerRecord userRecord = new PlayerRecord(GameActivity.difficulty, score, date);
-//            System.out.println("玩家得分：" + userRecord);
-//            recordDao.addAfterEnd(userRecord);
-
-            //todo 询问是否加入排行榜
         }
 
     }
@@ -578,27 +568,5 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         message.obj = score;
         handler.sendMessage(message);
     }
-
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void createSoundPool(SoundPool mysp) {
-        if (mysp == null) {
-            // Android 5.0 及 之后版本
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                AudioAttributes audioAttributes;
-                audioAttributes = new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build();
-                mysp = new SoundPool.Builder()
-                        .setMaxStreams(10)
-                        .setAudioAttributes(audioAttributes)
-                        .build();
-            } else { //Android 5.0 以前版本
-                mysp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);  // 创建SoundPool
-            }
-        }
-    }
-
 
 }

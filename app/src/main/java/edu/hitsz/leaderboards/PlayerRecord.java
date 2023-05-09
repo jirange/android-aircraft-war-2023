@@ -78,6 +78,18 @@ public class PlayerRecord implements Serializable {
         return difficulty;
     }
 
+    /**
+     * 获取 难度 字符串
+     * @return difficulty str
+     */
+    public static String getDifficultyStr(int difficulty) {
+        switch (difficulty){
+            case 1:return "EASY";
+            case 2:return "Medium";
+            case 3:return "Hard";
+        }
+        return "";
+    }
 
 
     /**
