@@ -1,15 +1,16 @@
 package edu.hitsz.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,6 +36,9 @@ public class RecordsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         if (getIntent() != null) {
             difficulty = getIntent().getIntExtra("difficulty", 1);
             score = getIntent().getIntExtra("score", 0);
@@ -45,10 +49,20 @@ public class RecordsActivity extends AppCompatActivity {
 
         //todo 游戏结束 打印排行榜
         setContentView(R.layout.activity_leaderboards);
+
+        //设置返回主界面键
+        Button return_btn = findViewById(R.id.return_btn);
+
+        return_btn.setOnClickListener(view -> {
+            Intent intent = new Intent(RecordsActivity.this, MainActivity.class);
+            startActivity(intent);
+
+        });
+
+
         //获得Layout里面的TextView 设置标题 显示难度
         TextView titleView = (TextView) findViewById(R.id.title);
-        titleView.setText(PlayerRecord.getDifficultyStr(difficulty));
-//        titleView.setText("@String/MediumGame");
+        titleView.setText(getString(R.string.difficultyChoice,PlayerRecord.getDifficultyStr(difficulty)));
         update();
 
         //todo 询问是否加入记录
@@ -73,12 +87,9 @@ public class RecordsActivity extends AppCompatActivity {
                         //删除数据
                         String deleteName = data.get(position).get("name");
                         data.remove(position);
-//                        System.out.println("posi  dff"+position);
                         //重新对数据进行排序
-//                        System.out.println(deleteName);
                         recordsDaoDB.doDeleteByName(deleteName);
                         data = getData();        //重新获取数据
-//                        System.out.println(data);
                         //更新排行榜
                         listItemAdapter.notifyDataSetChanged();
                         update();
@@ -135,9 +146,8 @@ public class RecordsActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("请输入你的姓名 不可重复")
                 .setMessage("确定将此条游戏记录加入排行榜？")
-//                .setIcon(android.R.drawable.ic_dialog_info)
                 .setView(edt)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         String input_name = edt.getText().toString();
                         PlayerRecord record = new PlayerRecord(difficulty,input_name, score, new Date());
@@ -149,7 +159,7 @@ public class RecordsActivity extends AppCompatActivity {
                         update();
                     }
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("NO", null)
                 .show();
     }
 

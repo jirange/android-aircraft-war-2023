@@ -22,7 +22,7 @@ public class ScatteringShoot implements ShootStrategy{
         int x = locationX;
 
 
-        int bulletSpeedY = speedY + direction * 5;
+        int bulletSpeedY = speedY + direction * 7;
         BaseBullet bullet1;
         BaseBullet bullet2;
         BaseBullet bullet3;
@@ -36,7 +36,7 @@ public class ScatteringShoot implements ShootStrategy{
             bullet2 = new HeroBullet(x, y, 0, bulletSpeedY);
             bullet3 = new HeroBullet(x, y, -bulletSpeedX, bulletSpeedY);
         }else {
-            int bulletSpeedX = random.nextInt(20);
+            int bulletSpeedX = random.nextInt(10);
             int y = locationY+ direction*100;
             bullet1 = new EnemyBullet(x, y, bulletSpeedX, bulletSpeedY);
             bullet2 = new EnemyBullet(x, y, 0, bulletSpeedY);

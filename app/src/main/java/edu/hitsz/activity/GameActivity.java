@@ -21,25 +21,21 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import edu.hitsz.R;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.game.BaseGame;
 import edu.hitsz.game.EasyGame;
 import edu.hitsz.game.HardGame;
 import edu.hitsz.game.MediumGame;
-import edu.hitsz.leaderboards.RecordDaoImpl;
 import edu.hitsz.music.MusicService;
+import edu.hitsz.music.MySoundPool;
 
 public class GameActivity extends AppCompatActivity {
     private static final String TAG = "GameActivity";
     public static int difficulty = 1;
 
     private int gameType = 0;
+    private boolean haveAudio = false;
+    Intent musicIntent;
 
     @Override
     protected void onDestroy() {
@@ -57,21 +53,28 @@ public class GameActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 Log.d(TAG, "handleMessage");
                 if (msg.what == 1) {
+                    //todo 关闭音乐bgm
+                    if (haveAudio) {
+                        stopService(musicIntent);
+                    }
+
                     Toast.makeText(GameActivity.this, "GameOver", Toast.LENGTH_SHORT).show();//原来在下面 地方了
 
                     //todo 游戏结束 打印排行榜  开启RecordsActivity
                     Intent recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
-                    recordsIntent.putExtra("difficulty",difficulty);
-                    recordsIntent.putExtra("score",(int)msg.obj);
+                    recordsIntent.putExtra("difficulty", difficulty);
+                    recordsIntent.putExtra("score", (int) msg.obj);
                     startActivity(recordsIntent);
                 }
             }
         };
         if (getIntent() != null) {
             gameType = getIntent().getIntExtra("gameType", 1);
+            haveAudio = getIntent().getBooleanExtra("have_audio", false);
 
         }
         BaseGame basGameView;
+
         if (gameType == 1) {
             basGameView = new MediumGame(this, handler);
             difficulty = 2;
@@ -84,6 +87,16 @@ public class GameActivity extends AppCompatActivity {
             difficulty = 1;
         }
         setContentView(basGameView);
+        if (haveAudio) {
+            musicIntent = new Intent(this, MusicService.class);
+            musicIntent.putExtra("action", "play");
+            startService(musicIntent);
+
+            MySoundPool.initialSoundPoolMap(this);
+            MySoundPool.haveAudio = true;
+        } else {
+            MySoundPool.haveAudio = false;
+        }
 
     }
 
@@ -95,7 +108,6 @@ public class GameActivity extends AppCompatActivity {
         }
         super.onBackPressed();
     }
-
 
 
 }

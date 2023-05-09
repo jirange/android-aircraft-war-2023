@@ -1,16 +1,16 @@
 package edu.hitsz.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import edu.hitsz.R;
-import edu.hitsz.music.MusicService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     public static int screenHeight;
 
     private int gameType=0;
+    private boolean have_audio=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         Button medium_btn = findViewById(R.id.medium_btn);
         Button easy_btn = findViewById(R.id.easy_btn);
         Button hard_btn = findViewById(R.id.hard_btn);
+        Switch video_btn = (Switch) findViewById(R.id.video_btn);
 
         getScreenHW();
 
@@ -37,20 +39,38 @@ public class MainActivity extends AppCompatActivity {
         medium_btn.setOnClickListener(view -> {
             gameType=1;
             intent.putExtra("gameType",gameType);
+            intent.putExtra("have_audio",have_audio);
             startActivity(intent);
         });
 
         easy_btn.setOnClickListener(view -> {
             gameType =2;
             intent.putExtra("gameType",gameType);
+            intent.putExtra("have_audio",have_audio);
             startActivity(intent);
         });
 
         hard_btn.setOnClickListener(view -> {
             gameType =3;
             intent.putExtra("gameType",gameType);
+            intent.putExtra("have_audio",have_audio);
             startActivity(intent);
 
+        });
+
+        video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    //音效开
+                    System.out.println("音效开");
+                    have_audio=true;
+                }else{
+                    //音效关闭
+                    System.out.println("音效关闭");
+                    have_audio=false;
+                }
+            }
         });
     }
     public void getScreenHW(){

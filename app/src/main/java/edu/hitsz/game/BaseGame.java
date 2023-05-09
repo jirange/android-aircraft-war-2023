@@ -133,7 +133,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
     //    SoundPool bgmSoundPool;
     int bgm_id;
-    Intent musicIntent;
 
     public BaseGame(Context context, Handler handler) {
         super(context);
@@ -146,9 +145,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         ImageManager.initImage(context);
 
         // 初始化英雄机
+        if (HeroAircraft.getHeroAircraft() != null) {
+            HeroAircraft.setHeroAircraftNull();
+        }
+
         heroAircraft = HeroAircraft.getHeroAircraft();
         heroAircraft.setHp(1000);
-//        heroAircraft.setShootStrategy(new DirectShoot());
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
@@ -157,15 +159,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
         heroController();
-        //todo 开启bgm
-//        createSoundPool(bgmSoundPool);
-//        bgmSoundPool.play(bgmSoundPool.load(context, R.raw.bgm,1),1,1,0,-1,1);
-
-//        bgm_id = GameActivity.mysp.play(GameActivity.soundPoolMap.get("bgm"), 1, 1, 0, -1, 1);
-
-        musicIntent = new Intent(context, MusicService.class);
-        musicIntent.putExtra("action", "play");
-        context.startService(musicIntent);
     }
 
     /**
@@ -180,31 +173,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
-//                if (enemyAircrafts.size() < enemyMaxNumber) {
-//                    Log.d("BaseGame","produceEnemy");
-//                    EnemyFactory factory;
-//                    AbstractEnemyAircraft enemy;
-//                    if (Math.random() <= superEnemyPro) {
-//                        factory = new SuperEnemyFactory();
-//                        enemy = factory.createEnemy(10,60);
-//                    } else {
-//                        factory = new MobEnemyFactory();
-//                        enemy = factory.createEnemy(10,30);
-//
-//                        //3/18
-//                    }
-//                    enemyAircrafts.add(enemy);
-//
-//                    /*enemyAircrafts.add(new MobEnemy(
-//                            (int) ( Math.random() * (MainActivity.screenWidth - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
-//                            (int) (Math.random() * MainActivity.screenHeight * 0.2),
-//                            0,
-//                            10,
-//                            30
-//                    ));*/
-//                }
-//                shootAction();
-
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     Log.d("BaseGame", "produceEnemy");
 
@@ -359,7 +327,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             if (heroAircraft.crash(bullet)) {
                 //todo 加载被击中音效
                 MySoundPool.playMusic("bullet_hit");
-//                GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
             }
@@ -379,12 +346,10 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 if (enemyAircraft.crash(bullet)) {
                     //todo 加载被击中音效
                     MySoundPool.playMusic("bullet_hit");
-//                    GameActivity.mysp.play(GameActivity.soundPoolMap.get("bullet_hit"), 1, 1, 0, 0, 1);
 
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
-
 
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
@@ -430,8 +395,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 //todo 道具生效音效
                 MySoundPool.playMusic("get_supply");
 
-//                GameActivity.mysp.play(GameActivity.soundPoolMap.get("get_supply"), 1, 1, 0, 0, 1);
-
                 System.out.println(prop.getSpeedY());
                 prop.activeProp(heroAircraft);
                 prop.vanish();
@@ -460,12 +423,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 bossEnemy.vanish();
             }
             //todo 游戏结束音效响起来
-//            GameActivity.mysp.play(GameActivity.soundPoolMap.get("game_over"), 1, 1, 0, 0, 1);
             MySoundPool.playMusic("game_over");
-
-            //todo 关闭音乐bgm
-            getContext().stopService(musicIntent);
-
 
             gameOverFlag = true;
 

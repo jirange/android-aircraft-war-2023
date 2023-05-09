@@ -10,29 +10,33 @@ import android.os.Build;
 import java.util.HashMap;
 
 import edu.hitsz.R;
-import edu.hitsz.activity.GameActivity;
 
 public class MySoundPool {
 
     public static SoundPool mysp;
     public static HashMap<String, Integer> soundPoolMap;
+    public static boolean haveAudio = false;
 
     public static int playMusic(String musicName, boolean loop) {
-        int id = -1;
-        if (soundPoolMap != null) {
-            int l = 0;
-            if (loop) {
-                l = -1;
+        if (haveAudio) {
+            int id = -1;
+            if (soundPoolMap != null) {
+                int l = 0;
+                if (loop) {
+                    l = -1;
+                }
+                id = mysp.play(soundPoolMap.get(musicName), 1, 1, 0, l, 1);
             }
-            id = mysp.play(soundPoolMap.get(musicName), 1, 1, 0, l, 1);
+            return id;
         }
-        return id;
+        return -1;
     }
 
     public static void playMusic(String musicName) {
-        if (soundPoolMap != null) {
-
-            mysp.play(soundPoolMap.get(musicName), 1, 1, 0, 0, 1);
+        if (haveAudio) {
+            if (soundPoolMap != null) {
+                mysp.play(soundPoolMap.get(musicName), 1, 1, 0, 0, 1);
+            }
         }
     }
 

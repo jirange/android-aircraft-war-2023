@@ -2,13 +2,8 @@ package edu.hitsz.leaderboards;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-import edu.hitsz.activity.RecordsActivity;
+import java.util.List;
 import edu.hitsz.leaderboards.database.RecordsDBHelper;
 
 public class RecordsDaoDBImpl implements RecordDao{
@@ -17,7 +12,6 @@ public class RecordsDaoDBImpl implements RecordDao{
         mHelper=RecordsDBHelper.getInstance(context,2);
     }
 
-    int diff;
     @Override
     public void doAdd(PlayerRecord record) {
         mHelper.openWriteLink();

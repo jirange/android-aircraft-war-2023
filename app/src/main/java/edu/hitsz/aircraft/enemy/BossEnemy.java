@@ -27,11 +27,10 @@ public class BossEnemy extends AbstractEnemyAircraft {
         this.direction = 1;
         //rate: 调节子弹移动速度
         this.rate = 1.5;
-        this.crashScore=80;
+        this.crashScore = 80;
         this.setShootStrategy(new ScatteringShoot());
-        //todo boss出现音效
-//        bgm_boss_id = GameActivity.mysp.play(GameActivity.soundPoolMap.get("bgm_boss"), 1, 1, 0, -1, 1);
-        bgm_boss_id = MySoundPool.playMusic("bgm_boss",true);
+        // boss出现音效
+        bgm_boss_id = MySoundPool.playMusic("bgm_boss", true);
 
     }
 
@@ -42,21 +41,21 @@ public class BossEnemy extends AbstractEnemyAircraft {
 
 
     @Override
-    public  List<BaseProp> dropProp(){
+    public List<BaseProp> dropProp() {
 
         List<BaseProp> props = new LinkedList<>();
         double dropPR = 1;
 
         int dropLocationX = locationX;
 
-        for (int i=0; i<dropNum; i++) {
-            BaseProp prop = BaseProp.getProp(dropPR,dropLocationX,locationY);
-            if (prop !=null) {
+        for (int i = 0; i < dropNum; i++) {
+            BaseProp prop = BaseProp.getProp(dropPR, dropLocationX, locationY);
+            if (prop != null) {
                 props.add(prop);
             }
-            dropLocationX = dropLocationX+15;
+            dropLocationX = dropLocationX + 15;
         }
-        return  props;
+        return props;
     }
 
     public int getCrashScore() {
@@ -66,9 +65,10 @@ public class BossEnemy extends AbstractEnemyAircraft {
     @Override
     public void vanish() {
         isValid = false;
-        //todo 停止播放boss-bgm
-//        GameActivity.mysp.stop(bgm_boss_id);
-        MySoundPool.mysp.stop(bgm_boss_id);
+        // 停止播放boss-bgm
+        if (bgm_boss_id != -1) {
+            MySoundPool.mysp.stop(bgm_boss_id);
+        }
     }
 
     /**

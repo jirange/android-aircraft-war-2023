@@ -4,21 +4,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-<LinearLayout
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#cccccc"
-    >
+        >
         <TextView android:id="@+id/rank"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"            
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="20sp" />
-        <TextView android:id="@+id/user"
-            android:layout_weight="1"
+
+        <TextView
+            android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.8"
             android:textSize="20sp" />
         <TextView android:id="@+id/score"
             android:layout_weight="1"

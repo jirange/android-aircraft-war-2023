@@ -1,15 +1,10 @@
 package edu.hitsz.leaderboards;
 
 
-
-//import edu.hitsz.application.Main;
-
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import edu.hitsz.activity.GameActivity;
 
 /**
  * 玩家的游戏记录
