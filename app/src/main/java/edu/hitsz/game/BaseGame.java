@@ -1,58 +1,35 @@
 package edu.hitsz.game;
 
-import android.annotation.TargetApi;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.hitsz.ImageManager;
-import edu.hitsz.R;
-import edu.hitsz.activity.GameActivity;
 import edu.hitsz.activity.MainActivity;
-import edu.hitsz.activity.RecordsActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.enemy.AbstractEnemyAircraft;
-import edu.hitsz.aircraft.enemy.MobEnemy;
 import edu.hitsz.aircraft.enemy.factory.BossEnemyFactory;
 import edu.hitsz.aircraft.enemy.factory.EnemyFactory;
-import edu.hitsz.aircraft.enemy.factory.MobEnemyFactory;
-import edu.hitsz.aircraft.enemy.factory.SuperEnemyFactory;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.leaderboards.PlayerRecord;
-import edu.hitsz.leaderboards.RecordDaoImpl;
-import edu.hitsz.music.MusicService;
 import edu.hitsz.music.MySoundPool;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.prop.BaseProp;
 import edu.hitsz.prop.BombProp;
-import edu.hitsz.strategy.shoot.DirectShoot;
 import edu.hitsz.strategy.shoot.ScatteringShoot;
 
 /**
@@ -289,10 +266,14 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
-            bullet.forward();
+//            if (bullet != null) {
+                bullet.forward();
+//            }
         }
         for (BaseBullet bullet : enemyBullets) {
-            bullet.forward();
+//            if (bullet != null) {
+                bullet.forward();
+//            }
         }
     }
 
@@ -419,7 +400,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
         if (heroAircraft.notValid()) {
             //让boss无效
-            if (bossEnemy!=null && !bossEnemy.notValid()){
+            if (bossEnemy != null && !bossEnemy.notValid()) {
                 bossEnemy.vanish();
             }
             //todo 游戏结束音效响起来
@@ -471,16 +452,28 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     }
 
     private void paintImageWithPositionRevised(List<? extends AbstractFlyingObject> objects) {
-        if (objects.size() == 0) {
+//        if (objects.size() == 0) {
+//            return;                //为了防止ConcurrentModificationException 所以删了
+//        }
+//
+//        for (AbstractFlyingObject object : objects) {
+//            Bitmap image = object.getImage();
+//            assert image != null : objects.getClass().getName() + " has no image! ";
+//            canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
+//                    object.getLocationY() - image.getHeight() / 2, mPaint);
+//        }
+        if (objects != null && objects.size() == 0) {
             return;
+        } else {
+            for (int i = 0; i < objects.size(); i++) {
+                AbstractFlyingObject object = objects.get(i);
+                Bitmap image = object.getImage();
+                assert image != null : objects.getClass().getName() + " has no image! ";
+                canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
+                        object.getLocationY() - image.getHeight() / 2, mPaint);
+            }
         }
 
-        for (AbstractFlyingObject object : objects) {
-            Bitmap image = object.getImage();
-            assert image != null : objects.getClass().getName() + " has no image! ";
-            canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
-                    object.getLocationY() - image.getHeight() / 2, mPaint);
-        }
     }
 
     private void paintScoreAndLife() {
@@ -514,10 +507,19 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public void run() {
+        new Thread(() -> {
+            while (mbLoop) {   //游戏结束停止绘制
+                action();
+                try {
+                    Thread.sleep(timeInterval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         while (mbLoop) {   //游戏结束停止绘制
             synchronized (mSurfaceHolder) {
-                action();
                 draw();
             }
         }

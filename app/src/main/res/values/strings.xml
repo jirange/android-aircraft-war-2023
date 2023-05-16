@@ -3,6 +3,8 @@
     <string name="MediumGame">普通模式</string>
     <string name="EasyGame">简单模式</string>
     <string name="HardGame">困难模式</string>
+    <string name="singleModel">单机模式</string>
+    <string name="onlineModel">联机模式</string>
     <string name="music">音量</string>
     <string name="have_video">音效</string>
     <string name="difficultyChoice">难度：%1$s</string>

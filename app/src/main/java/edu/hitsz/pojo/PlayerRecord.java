@@ -1,4 +1,4 @@
-package edu.hitsz.leaderboards;
+package edu.hitsz.pojo;
 
 
 import java.io.Serializable;

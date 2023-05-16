@@ -19,6 +19,7 @@ public class MySoundPool {
 
     public static int playMusic(String musicName, boolean loop) {
         if (haveAudio) {
+
             int id = -1;
             if (soundPoolMap != null) {
                 int l = 0;
@@ -34,9 +35,11 @@ public class MySoundPool {
 
     public static void playMusic(String musicName) {
         if (haveAudio) {
-            if (soundPoolMap != null) {
-                mysp.play(soundPoolMap.get(musicName), 1, 1, 0, 0, 1);
-            }
+            new Thread(() -> {
+                if (soundPoolMap != null) {
+                    mysp.play(soundPoolMap.get(musicName), 1, 1, 0, 0, 1);
+                }
+            }).start();
         }
     }
 

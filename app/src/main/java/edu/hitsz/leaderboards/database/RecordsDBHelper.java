@@ -9,7 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import edu.hitsz.leaderboards.PlayerRecord;
+import edu.hitsz.pojo.PlayerRecord;
 
 public class RecordsDBHelper extends SQLiteOpenHelper {
     private static final String TAG = "RecordsDBHelper";

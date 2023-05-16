@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_difficulty_choice);
         Button medium_btn = findViewById(R.id.medium_btn);
         Button easy_btn = findViewById(R.id.easy_btn);
         Button hard_btn = findViewById(R.id.hard_btn);

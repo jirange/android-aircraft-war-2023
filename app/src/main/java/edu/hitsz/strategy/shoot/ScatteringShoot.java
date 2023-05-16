@@ -20,8 +20,6 @@ public class ScatteringShoot implements ShootStrategy{
         List<BaseBullet> res = new LinkedList<>();
         Random random = new Random();
         int x = locationX;
-
-
         int bulletSpeedY = speedY + direction * 7;
         BaseBullet bullet1;
         BaseBullet bullet2;

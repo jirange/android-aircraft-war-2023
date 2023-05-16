@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.hitsz.R;
-import edu.hitsz.leaderboards.PlayerRecord;
+import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.leaderboards.RecordsDaoDBImpl;
 
 public class RecordsActivity extends AppCompatActivity {
