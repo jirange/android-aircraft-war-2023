@@ -2,12 +2,12 @@ package edu.hitsz.leaderboards;
 
 
 //import javax.swing.*;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.hitsz.activity.GameActivity;
+import edu.hitsz.pojo.PlayerRecord;
 
 /**
  * RecordDao接口的具体实现类

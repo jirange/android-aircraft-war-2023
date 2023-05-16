@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.util.List;
 import edu.hitsz.leaderboards.database.RecordsDBHelper;
+import edu.hitsz.pojo.PlayerRecord;
 
 public class RecordsDaoDBImpl implements RecordDao{
     private RecordsDBHelper mHelper;
@@ -31,14 +32,12 @@ public class RecordsDaoDBImpl implements RecordDao{
 
     @Override
     public void doDeleteByName(String playerName) {
-        System.out.println(getAllRecords(1));
         mHelper.openWriteLink();
         String whereClause="r_playerName=?";
         String[] whereArgs={playerName};
         int delete = mHelper.delete(whereClause, whereArgs);
         System.out.println("delete"+delete+"条");
         mHelper.closeLink();
-        System.out.println(getAllRecords(1));
 
     }
 

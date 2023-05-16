@@ -2,6 +2,8 @@ package edu.hitsz.leaderboards;
 
 import java.util.List;
 
+import edu.hitsz.pojo.PlayerRecord;
+
 /**
  * @author leng
  */
