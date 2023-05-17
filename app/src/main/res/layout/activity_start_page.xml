@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="80"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="80sp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:typeface="serif"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/purple_700"
+
+            />
+
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="@string/start_game"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:typeface="serif"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        ></Button>
+    <Button
+        android:id="@+id/login_btn"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="@string/login"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:typeface="serif"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        ></Button>
+
+</LinearLayout>

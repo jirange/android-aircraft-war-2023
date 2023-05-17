@@ -20,7 +20,6 @@ import java.util.List;
 
 import edu.hitsz.pojo.PlayerRecord;
 
-
 public class ClientThread implements Runnable {
     private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
@@ -31,37 +30,30 @@ public class ClientThread implements Runnable {
     private ObjectInputStream in = null;
     private PrintWriter out = null;
 
-    private PrintWriter writer;
     private static final String TAG = "ClientThread";
 
     public ClientThread(Handler myhandler) {
-        System.out.println("ooeeppp");
         this.toclientHandler = myhandler;
     }
 
     public void run() {
         try {
-//            socket = new Socket(HOST, PORT);  //建立连接到远程服务器的Socket
             socket = new Socket();
             //运行时修改成服务器的IP
             socket.connect(new InetSocketAddress(HOST, PORT));
-            System.out.println("ooooooooooooooooooooo");
             //初始化输入输出流
 //            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-//            in = new ObjectInputStream(socket.getInputStream());
-            System.out.println("nnnnnnnnnnnnnn");
-
-            System.out.println("ppppppppppppppppppppppppppppp");
-
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream(), "UTF-8")), true);
             //创建子线程，
             new Thread() {
                 @Override
                 public void run() {
                     String fromserver = null;
                     try {
-                        in = new ObjectInputStream(socket.getInputStream());
+//                        in = new ObjectInputStream(socket.getInputStream());
                         while (in != null) {
-//                            in = new ObjectInputStream(socket.getInputStream());
                             List<PlayerRecord> playerRecordList = null;
                             try {
                                 playerRecordList = (List<PlayerRecord>) in.readObject();
@@ -80,17 +72,13 @@ public class ClientThread implements Runnable {
                     }
                 }
             }.start();
-            System.out.println("uuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
 
             Looper.prepare();  //在子线程中初始化一个Looper对象，即为当前线程创建消息队列
-            System.out.println("rrrrrrrrrrrrrrrrrrr" + toserverHandler);
             toserverHandler = new Handler(Looper.myLooper()) {  //实例化Handler对象
                 @Override
                 public void handleMessage(Message msg) {
                     if (msg.what == 0x456) {//456是操作类发给该类clientThread的，即需要传输的对象
                         try {
-                            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                                    socket.getOutputStream(), "UTF-8")), true);
                             JSONObject jsonObject = (JSONObject) msg.obj;
                             out.println(jsonObject.toString());  //将输出流包装为打印流  对象为键值对 or json
                             Log.i(TAG, "json = " + jsonObject.toString());

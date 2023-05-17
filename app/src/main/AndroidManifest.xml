@@ -23,6 +23,18 @@
             android:name="edu.hitsz.activity.RecordsActivity"
             android:exported="false" />
         <activity
+            android:name="edu.hitsz.activity.ModelActivity"
+            android:exported="false" />
+        <activity
+            android:name="edu.hitsz.activity.StartPageActivity"
+            android:exported="false" />
+        <activity
+            android:name="edu.hitsz.activity.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name="edu.hitsz.activity.DifficultyActivity"
+            android:exported="false" />
+        <activity
             android:name="edu.hitsz.activity.MainActivity"
             android:exported="true" >
             <intent-filter>

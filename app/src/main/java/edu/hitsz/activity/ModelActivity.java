@@ -2,6 +2,7 @@ package edu.hitsz.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,8 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
     private Button online_btn;
     private Handler handler;
     private ClientThread clientThread;
+    Intent modelIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +44,20 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         };
+
+        modelIntent = new Intent(ModelActivity.this, MainActivity.class);
+
     }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.single_btn:
-                //todo 开启单击模式
+                //todo 开启单机模式
+                // 跳转到难度选择页面 mainActivity
+                startActivity(modelIntent);
+
                 break;
 
             case R.id.online_btn:  // 进行网络连接

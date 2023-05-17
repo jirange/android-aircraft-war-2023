@@ -25,7 +25,21 @@ public class RecordsDaoIntDBImpl implements RecordDao {
 
     public RecordsDaoIntDBImpl() {
         this.diff = GameActivity.difficulty;
-        getAll(diff);
+        handler = new Handler(getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                //如果消息来自于子线程  clientThread  即数据库操作的返回值
+                if (msg.what == 0x123) {
+                    System.out.println(msg.obj);
+                    records = (List<PlayerRecord>) msg.obj;
+                    System.out.println(System.currentTimeMillis());
+                    System.out.println(records);
+                }
+            }
+        };
+
+        clientThread = new ClientThread(handler);  //
+        new Thread(clientThread).start();
     }
 
 
@@ -50,32 +64,16 @@ public class RecordsDaoIntDBImpl implements RecordDao {
     @Override
     public List<PlayerRecord> getAllRecords(int diff) {
         this.diff = diff;
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return records;
     }
 
     private void getAll(int diff) {
-        handler = new Handler(getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                //如果消息来自于子线程  clientThread  即数据库操作的返回值
-                if (msg.what == 0x123) {
-                    System.out.println(msg.obj);
-                    records = (List<PlayerRecord>) msg.obj;
-
-//                    JSONObject jsonObject = JSONObject.fromObject(msg.obj);
-//                    if (jsonObject!=null){
-//                        records = (List<PlayerRecord>) jsonObject.get("getAll");
-//                        System.out.println(records);
-//                    }
-
-                }
-            }
-        };
-
-        clientThread = new ClientThread(handler);  //
-        new Thread(clientThread).start();
-
-
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("getAll", diff);
