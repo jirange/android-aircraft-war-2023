@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static int screenWidth;
     public static int screenHeight;
+    public static boolean have_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

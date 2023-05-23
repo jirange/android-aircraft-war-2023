@@ -8,35 +8,35 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.pojo.User;
 
-public class ClientThread implements Runnable {
-//        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
+public class UserClientThread implements Runnable {
+    //        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
     private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
     private Handler toclientHandler;     // 向UI线程发送消息的Handler对象
     public Handler toserverHandler;  // 接收UI线程消息的Handler对象
-    //    private BufferedReader in = null;
-    private ObjectInputStream in = null;
+    private BufferedReader in = null;
     private PrintWriter out = null;
 
     private static final String TAG = "ClientThread";
 
-    public ClientThread(Handler myhandler) {
+    public UserClientThread(Handler myhandler) {
         this.toclientHandler = myhandler;
     }
 
@@ -47,8 +47,7 @@ public class ClientThread implements Runnable {
             socket.connect(new InetSocketAddress(HOST, PORT));
             System.out.println("我好了我好无法建瓯市附件");
             //初始化输入输出流
-//            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-//            in = new ObjectInputStream(socket.getInputStream());
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             System.out.println("你发的十大");
 
 
@@ -58,57 +57,14 @@ public class ClientThread implements Runnable {
                 public void run() {
                     String fromserver = null;
                     try {
-                        InputStream is = socket.getInputStream();
-                        in = new ObjectInputStream(is);
-
-                        System.out.println("传回的是"+in);
+                        System.out.println("传回的是" + in);
                         while (in != null) {
+                            System.out.println(":n传回的是n传回的是n");
                             Message servermsg = new Message();
-                            List<PlayerRecord> playerRecordList = null;
-                            List<User> userList = null;
-                            User user;
-                            String userMessage;
-                            try {
-//                                playerRecordList = (List<PlayerRecord>) in.readObject();
-
-                                Object o = in.readObject();
-                                System.out.println("klhjlkij"+o);
-                                if (o instanceof User) {
-                                    System.out.println("传回的是 用户");
-                                    user = (User) o;
-                                    servermsg.what = 0x113;
-                                    servermsg.obj = user;//服务器返回的东西  操作的返回值
-                                } if (o instanceof String) {
-                                    System.out.println("传回的是 Str");
-                                    userMessage = (String) o;
-                                    servermsg.what = 0x113;
-                                    servermsg.obj = userMessage;//服务器返回的东西  操作的返回值
-                                } else{
-                                    System.out.println("传回的是 记录");
-                                    playerRecordList = (List<PlayerRecord>) o;
-                                    servermsg.what = 0x123;
-                                    servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
-                                }
-
-//                                if (((List<?>) o).iterator().hasNext()) {
-//                                    if (((List<?>) o).iterator().next() instanceof PlayerRecord) {
-//                                        System.out.println("传回的是 记录");
-//                                        playerRecordList = (List<PlayerRecord>) o;
-//                                        servermsg.what = 0x123;
-//                                        servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
-//                                    } else if (((List<?>) o).iterator().next() instanceof User) {
-//                                        System.out.println("传回的是 用户");
-//                                        userList = (List<User>) o;
-//                                        servermsg.what = 0x113;
-//                                        servermsg.obj = userList;//服务器返回的东西  操作的返回值
-//                                    }
-//
-//                                }
-                            } catch (ClassNotFoundException e) {
-                                System.out.println("类找不到了！！！");
-                                e.printStackTrace();
-                            }
-
+                            String s = in.readLine();
+                            System.out.println("str " + s);
+                            servermsg.what = 0x113;
+                            servermsg.obj = s;//服务器返回的东西  操作的返回值
                             toclientHandler.sendMessage(servermsg);//将其返回给操作类
                         }
 

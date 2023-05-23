@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.hitsz.pojo.PlayerRecord;
 
@@ -20,7 +21,7 @@ public class MyDB4records {
 //        createTable();
 //        createNewAccount(new PlayerRecord(1,1,"nihao",250,new Date()));
 //        getAllUser(1);
-        delete(" r_score = 1 ");
+//        delete(" r_score = 1 ");
     }
 
     private static void createDataBase() {
