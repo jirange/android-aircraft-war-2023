@@ -16,12 +16,15 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.hitsz.pojo.PlayerRecord;
+import edu.hitsz.pojo.User;
 
 public class ClientThread implements Runnable {
-    private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
+    //    private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
+    private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
     private Handler toclientHandler;     // 向UI线程发送消息的Handler对象
@@ -54,16 +57,44 @@ public class ClientThread implements Runnable {
                     try {
 //                        in = new ObjectInputStream(socket.getInputStream());
                         while (in != null) {
+                            Message servermsg = new Message();
                             List<PlayerRecord> playerRecordList = null;
+                            List<User> userList = null;
+                            User user;
                             try {
-                                playerRecordList = (List<PlayerRecord>) in.readObject();
+//                                playerRecordList = (List<PlayerRecord>) in.readObject();
+                                Object o = in.readObject();
+                                if (o instanceof User) {
+                                    System.out.println("传回的是 用户");
+                                    user = (User) o;
+                                    servermsg.what = 0x113;
+                                    servermsg.obj = user;//服务器返回的东西  操作的返回值
+                                } else{
+                                    System.out.println("传回的是 记录");
+                                    playerRecordList = (List<PlayerRecord>) o;
+                                    servermsg.what = 0x123;
+                                    servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
+                                }
+
+//                                if (((List<?>) o).iterator().hasNext()) {
+//                                    if (((List<?>) o).iterator().next() instanceof PlayerRecord) {
+//                                        System.out.println("传回的是 记录");
+//                                        playerRecordList = (List<PlayerRecord>) o;
+//                                        servermsg.what = 0x123;
+//                                        servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
+//                                    } else if (((List<?>) o).iterator().next() instanceof User) {
+//                                        System.out.println("传回的是 用户");
+//                                        userList = (List<User>) o;
+//                                        servermsg.what = 0x113;
+//                                        servermsg.obj = userList;//服务器返回的东西  操作的返回值
+//                                    }
+//
+//                                }
                             } catch (ClassNotFoundException e) {
                                 System.out.println("类找不到了！！！");
                                 e.printStackTrace();
                             }
-                            Message servermsg = new Message();
-                            servermsg.what = 0x123;
-                            servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
+
                             toclientHandler.sendMessage(servermsg);//将其返回给操作类
                         }
 
@@ -101,7 +132,7 @@ public class ClientThread implements Runnable {
             if (out != null) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("close",1);
+                    jsonObject.put("close", 1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -111,7 +142,7 @@ public class ClientThread implements Runnable {
             if (in != null) {
                 in.close();
             }
-            if (socket!=null){
+            if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {

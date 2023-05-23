@@ -52,6 +52,7 @@
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:entries="@array/modelArray"
             android:spinnerMode="dropdown" />
     </LinearLayout>
 
@@ -70,5 +71,15 @@
         android:textStyle="bold"
         android:typeface="serif"></Button>
 
-
+    <Switch
+        android:id="@+id/online_video_btn"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:checked="true"
+        android:text="@string/have_video"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:typeface="serif"></Switch>
 </LinearLayout>

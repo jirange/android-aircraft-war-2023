@@ -10,6 +10,9 @@ import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+
 import edu.hitsz.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(loginIntent);
         });
+
     }
     public void getScreenHW(){
         //定义DisplayMetrics 对象
