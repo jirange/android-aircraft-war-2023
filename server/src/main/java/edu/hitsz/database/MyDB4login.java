@@ -11,9 +11,10 @@ import edu.hitsz.pojo.User;
 
 public class MyDB4login {
     public static void main(String args[]){
-        createDataBase();
-        createUser();
-        createNewAccount("wowowo","123");
+//        createDataBase();
+//        createUser();
+        createNewAccount("wowwwowo","123");
+        createNewAccount("nmy","123456");
         getAllUser();
     }
     private static final String DB_NAME = "customer_serve.db";

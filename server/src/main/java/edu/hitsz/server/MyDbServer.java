@@ -16,12 +16,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 
 public class MyDbServer {
     public static final int PORT = 8899;//端口号
     private ServerSocket server = null;
     ObjectOutputStream out = null;
+    List<User> users = new ArrayList<>();
+    List<User> waitMatch = new ArrayList<>();
+    List<User> matchers = new ArrayList<>();
 
 
     public static void main(String[] args) {
@@ -89,6 +93,8 @@ public class MyDbServer {
 
         public void parseJson(String content) {
             JSONObject jsonObject = JSONObject.fromObject(content);
+            User user = null;
+
             if (jsonObject != null) {
                 Iterator<String> iterator = jsonObject.keys();
                 while (iterator.hasNext()) {
@@ -123,34 +129,60 @@ public class MyDbServer {
                                     System.out.println("传给客户端 " + allUser);
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                }                            }
+                                }
+                            }
                             break;
                         case "login":
                             //todo 登陆操作
-                            User user = (User) jsonObject.get("login");
-
-                            String condition = " name = "+user.getName()+" password = "+user.getPassword();
+                            user = (User) jsonObject.get("login");
+                            System.out.println("数据库收到了 user"+user);
+                            users.add(user);
+                            user.socket = socket;
+                            String condition = " name = " + user.getName() + " password = " + user.getPassword();
                             ArrayList<User> query = MyDB4login.query(condition);
-                            if (query==null || query.size()==0){
+                            if (query == null || query.size() == 0) {
                                 //todo 提示用户名和密码错误
+                            }else{
+                                if (socket.isConnected()) {
+                                    try {
+                                        out = new ObjectOutputStream(socket.getOutputStream());
+                                        out.writeObject(user);
+                                        System.out.println("传给客户端 " + user);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                             break;
                         case "register":
                             //todo 注册
                             User user_register = (User) jsonObject.get("login");
 
-                            String condition_register = " name = "+user_register.getName();
+                            String condition_register = " name = " + user_register.getName();
                             ArrayList<User> query_user_register = MyDB4login.query(condition_register);
-                            if (query_user_register==null || query_user_register.size()==0){
+                            if (query_user_register == null || query_user_register.size() == 0) {
                                 //todo 开始正常注册流程
-                            }else {
+                            } else {
                                 //todo 之前注册过 应该提示用户名已存在 请换一个
                             }
 
                             break;
-                        case "request_join":
+                        case "askMatch":
                             //todo 请求对战
                             //维护一个匹配清单
+                            if (user.matchSocket == null) waitMatch.add(user);//这句话应该在login里面  ！！！
+                            for (User waitMatch : waitMatch) {
+                                if (waitMatch != user) ;
+                                user.matchUser = waitMatch;
+                                waitMatch.matchUser = user;
+                                user.matchSocket = waitMatch.socket;
+                                waitMatch.socket = user.socket;
+                            }
+                            if (user.matchSocket != null) {
+                                waitMatch.remove(user);
+                                waitMatch.remove(user.matchUser);
+                            }
+
                             //选择对战则需等待对手加入
                             //• 实现联网对战同步对手得分
                             //• 得分排行榜界面实现（联网）
