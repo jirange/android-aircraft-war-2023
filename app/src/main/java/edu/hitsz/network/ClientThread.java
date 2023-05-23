@@ -23,8 +23,8 @@ import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.pojo.User;
 
 public class ClientThread implements Runnable {
-    //    private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
-    private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
+        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
+//    private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
     private Handler toclientHandler;     // 向UI线程发送消息的Handler对象
