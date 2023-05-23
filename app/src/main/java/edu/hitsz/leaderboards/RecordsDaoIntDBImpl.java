@@ -40,14 +40,28 @@ public class RecordsDaoIntDBImpl implements RecordDao {
 
         clientThread = new ClientThread(handler);  //
         new Thread(clientThread).start();
+        //getAll(diff)
     }
 
 
     @Override
     public void doAdd(PlayerRecord record) {
         JSONObject jsonObject = new JSONObject();
+        JSONObject recordJson = new JSONObject();
+
         try {
-            jsonObject.put("add", record);
+            recordJson.put("difficulty",record.getDifficulty());
+            recordJson.put("ranking",record.getRanking());
+            recordJson.put("playerName",record.getPlayerName());
+            recordJson.put("score",record.getScore());
+            recordJson.put("recordTime",record.getRecordTimeStr());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            jsonObject.put("add", recordJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -84,7 +98,13 @@ public class RecordsDaoIntDBImpl implements RecordDao {
         Message msg = new Message();
         msg.what = 0x456;
         msg.obj = jsonObject;
+        while (true){
+            if (clientThread.toserverHandler!=null){
+                break;
+            }
+        }
         clientThread.toserverHandler.sendMessage(msg);//具体信息
+
     }
 
     @Override

@@ -36,6 +36,7 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
     private Spinner difficultySp;
     private Handler handler;
     private ClientThread clientThread;
+    boolean have_match;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +96,11 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 //如果消息来自于子线程  clientThread  即数据库操作的返回值
                 if (msg.what == 0x123) {
-                    System.out.println("在online diff 中处理消息了");
+                    System.out.println("在online diff 中处理消息了"+msg.obj);
+                    String msgStr = (String)msg.obj;
+                    if (msgStr.equals("match_success")){
+                        have_match = true;
+                    }
                 }
             }
         };
@@ -116,6 +121,16 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
         msg.what = 0x456;
         msg.obj = jsonObject;
         clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+        if (!have_match){
+            //匹配成功的话
+//            再结束
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

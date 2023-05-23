@@ -13,9 +13,14 @@ public class MyDB4login {
     public static void main(String args[]){
 //        createDataBase();
 //        createUser();
-        createNewAccount("wowwwowo","123");
-        createNewAccount("nmy","123456");
-        getAllUser();
+//        createNewAccount("wowwwowo","123");
+//        createNewAccount("nmy","123456");
+//        getAllUser();
+
+//        String condition = "  NAME = '" + "nmy" +"' AND " +" PASSWORD = '" + "123456"+"'";
+//        ArrayList<User> query = MyDB4login.query(condition);
+//        System.out.println(query);
+
     }
     private static final String DB_NAME = "customer_serve.db";
     private static final String url="jdbc:sqlite:"+DB_NAME;
@@ -45,8 +50,8 @@ public class MyDB4login {
             stmt = c.createStatement();
             String sql = "CREATE TABLE "+TABLE_NAME+" " +
                     "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " NAME           TEXT    NOT NULL, " +
-                    " PASSWORD        TEXT     NOT NULL)";
+                    " NAME           VARCHAR    NOT NULL, " +
+                    " PASSWORD        VARCHAR     NOT NULL)";
             stmt.executeUpdate(sql);
             stmt.close();
             c.close();
@@ -93,7 +98,7 @@ public class MyDB4login {
                     "VALUES ('"+
                     user.getName() + "','" +
                     user.getPassword() + "');";
-
+            System.out.println("sql "+sql);
             stmt.executeUpdate(sql);
             stmt.close();
             c.close();
@@ -116,9 +121,7 @@ public class MyDB4login {
             stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery( "SELECT * FROM "+TABLE_NAME+";" );
             while(rs.next()){
-                System.out.println("name = " + rs.getString("name"));
                 users.add(new User(rs.getString("name"), rs.getString("password")));
-                System.out.println("password = " + rs.getString("password"));
             }
             stmt.close();
             c.close();
@@ -139,13 +142,15 @@ public class MyDB4login {
             c = DriverManager.getConnection(url);
             System.out.println("Opened database successfully");
 
-            String sql = String.format("select name,password" +
+            String sql = String.format("select NAME,PASSWORD" +
                     " from %s where %s;", TABLE_NAME, condition);
+            System.out.println("sql  "+sql);
 
             stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
+
             while(rs.next()){
-                users.add(new User(rs.getString("name"), rs.getString("password")));
+                users.add(new User(rs.getString("NAME"), rs.getString("PASSWORD")));
             }
             stmt.close();
             c.close();

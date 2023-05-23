@@ -8,12 +8,15 @@ import edu.hitsz.pojo.User;
 import net.sf.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +26,7 @@ public class MyDbServer {
     public static final int PORT = 8899;//端口号
     private ServerSocket server = null;
     ObjectOutputStream out = null;
+    BufferedWriter bw = null;
     List<User> users = new ArrayList<>();
     List<User> waitMatch = new ArrayList<>();
     List<User> matchers = new ArrayList<>();
@@ -83,6 +87,7 @@ public class MyDbServer {
                 while ((content = in.readLine()) != null) {
                     System.out.println("从客户端接收到的消息为：" + content);
                     parseJson(content);
+//                    out.close();
                 }
 //                socket.close();
                 //in.close();
@@ -134,36 +139,86 @@ public class MyDbServer {
                             break;
                         case "login":
                             //todo 登陆操作
-                            user = (User) jsonObject.get("login");
+                            JSONObject login = jsonObject.getJSONObject("login");
+                            String name = login.getString("name");
+                            String password = login.getString("password");
+                            user = new User();
+                            user.setName(name);
+                            user.setPassword(password);
+//                            String login = (String) jsonObject.get("login");
+//                            user = (User) JSONObject.toBean(login, User.class);
+//                            parseJson(login)
+//                            String u_name= login.split("-")[0];
+//                            String u_password = login.split("-")[0];
                             System.out.println("数据库收到了 user"+user);
                             users.add(user);
-                            user.socket = socket;
-                            String condition = " name = " + user.getName() + " password = " + user.getPassword();
+                            //todo user.socket = socket;
+//                            String condition = "  NAME = '" + "nmy" +"' AND " +" PASSWORD = '" + "123456"+"'";
+                            String condition = String.format(" NAME = '%s' AND  PASSWORD = '%s'",user.getName(),user.getPassword());
+//                            String condition = " name = " + user.getName() + " password = " + user.getPassword();
                             ArrayList<User> query = MyDB4login.query(condition);
+                            System.out.println(query);
+                            String noticeStr;
                             if (query == null || query.size() == 0) {
+                                noticeStr="login_failed";
                                 //todo 提示用户名和密码错误
                             }else{
-                                if (socket.isConnected()) {
-                                    try {
-                                        out = new ObjectOutputStream(socket.getOutputStream());
-                                        out.writeObject(user);
-                                        System.out.println("传给客户端 " + user);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                noticeStr="login_success";
+                            }
+//todo 可不可以这样呢  不用序列化了  用个新流，比如正常的字符输入输出流
+                            if (socket.isConnected()) {
+                                try {
+//                                    out = new ObjectOutputStream(socket.getOutputStream());
+//                                    out.writeObject(noticeStr);
+
+                                    bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                                    bw.write(noticeStr);
+                                    bw.newLine();
+
+                                    System.out.println("传给客户端 " + noticeStr);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
                             }
+
                             break;
+
                         case "register":
                             //todo 注册
-                            User user_register = (User) jsonObject.get("login");
+                            String registerStr;
 
-                            String condition_register = " name = " + user_register.getName();
+                            JSONObject register = jsonObject.getJSONObject("register");
+                            User user_register = new User(register.getString("name"),register.getString("password"));
+                            System.out.println("数据库收到了 user"+user_register);
+                            String condition_register = String.format(" NAME = '%s' ",user_register.getName());
                             ArrayList<User> query_user_register = MyDB4login.query(condition_register);
+
                             if (query_user_register == null || query_user_register.size() == 0) {
                                 //todo 开始正常注册流程
+                                System.out.println("查无此人");
+                                MyDB4login.createNewAccount(user_register);
+                                registerStr = "register_success";
+                                users.add(user_register);
                             } else {
+                                System.out.println("查有此人");
+
                                 //todo 之前注册过 应该提示用户名已存在 请换一个
+                                registerStr = "register_failed";
+                            }
+                            if (socket.isConnected()) {
+                                try {
+//                                    out = new ObjectOutputStream(socket.getOutputStream());
+//                                    out.writeObject(registerStr);
+
+                                    bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                                    bw.write(registerStr);
+                                    bw.newLine();
+
+
+                                    System.out.println("传给客户端 " + registerStr);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             break;
