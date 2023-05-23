@@ -2,8 +2,6 @@ package edu.hitsz.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -12,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import edu.hitsz.R;
 
-public class DifficultyActivity extends AppCompatActivity {
+public class OnlineDifficultyActivity extends AppCompatActivity {
 
     private static final String TAG = "DifficultyActivity";
 
@@ -28,34 +26,28 @@ public class DifficultyActivity extends AppCompatActivity {
         Button hard_btn = findViewById(R.id.hard_btn);
         Switch video_btn = (Switch) findViewById(R.id.video_btn);
 
-//        if (getIntent() != null) {
-//            isOnline = getIntent().getBooleanExtra("model", false);
-//        }
 
-
-        Intent intent = new Intent(DifficultyActivity.this, GameActivity.class);
-
-        medium_btn.setOnClickListener(view -> {
-            gameType=1;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
-        });
-
-        easy_btn.setOnClickListener(view -> {
-            gameType =2;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
-        });
-
-        hard_btn.setOnClickListener(view -> {
-            gameType =3;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
-
-        });
+//        medium_btn.setOnClickListener(view -> {
+//            gameType=1;
+//            intent.putExtra("gameType",gameType);
+//            intent.putExtra("have_audio",have_audio);
+//            startActivity(intent);
+//        });
+//
+//        easy_btn.setOnClickListener(view -> {
+//            gameType =2;
+//            intent.putExtra("gameType",gameType);
+//            intent.putExtra("have_audio",have_audio);
+//            startActivity(intent);
+//        });
+//
+//        hard_btn.setOnClickListener(view -> {
+//            gameType =3;
+//            intent.putExtra("gameType",gameType);
+//            intent.putExtra("have_audio",have_audio);
+//            startActivity(intent);
+//
+//        });
 
         video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

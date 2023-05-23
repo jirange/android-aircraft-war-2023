@@ -19,58 +19,25 @@ public class MainActivity extends AppCompatActivity {
     public static int screenWidth;
     public static int screenHeight;
 
-    private int gameType=0;
-    private boolean have_audio=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_difficulty_choice);
-        Button medium_btn = findViewById(R.id.medium_btn);
-        Button easy_btn = findViewById(R.id.easy_btn);
-        Button hard_btn = findViewById(R.id.hard_btn);
-        Switch video_btn = (Switch) findViewById(R.id.video_btn);
+        setContentView(R.layout.activity_start_page);
+        Button start_btn = findViewById(R.id.start_btn);
+        Button login_btn = findViewById(R.id.login_btn);
 
         getScreenHW();
 
-        Intent intent = new Intent(MainActivity.this, GameActivity.class);
-
-
-
-        medium_btn.setOnClickListener(view -> {
-            gameType=1;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
+        start_btn.setOnClickListener(view -> {
+//            intent.putExtra("gameType",gameType);
+            Intent modelIntent = new Intent(MainActivity.this, ModelActivity.class);
+            startActivity(modelIntent);
         });
 
-        easy_btn.setOnClickListener(view -> {
-            gameType =2;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
-        });
-
-        hard_btn.setOnClickListener(view -> {
-            gameType =3;
-            intent.putExtra("gameType",gameType);
-            intent.putExtra("have_audio",have_audio);
-            startActivity(intent);
-
-        });
-
-        video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
-                    //音效开
-                    System.out.println("音效开");
-                    have_audio=true;
-                }else{
-                    //音效关闭
-                    System.out.println("音效关闭");
-                    have_audio=false;
-                }
-            }
+        login_btn.setOnClickListener(view -> {
+            //todo 转到登录界面
+            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(loginIntent);
         });
     }
     public void getScreenHW(){

@@ -20,7 +20,8 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
     private Button online_btn;
     private Handler handler;
     private ClientThread clientThread;
-    Intent modelIntent;
+    Intent DifficultyIntent;
+    Intent onlineDifficultyIntent;
 
 
     @Override
@@ -41,11 +42,11 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                 //如果消息来自于子线程
                 if (msg.what == 0x123) {
                     //todo 处理来自clientThread的消息
+                    //todo 提示网络连接成功
                 }
             }
         };
 
-        modelIntent = new Intent(ModelActivity.this, MainActivity.class);
 
     }
 
@@ -55,14 +56,25 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.single_btn:
                 //todo 开启单机模式
-                // 跳转到难度选择页面 mainActivity
-                startActivity(modelIntent);
+                DifficultyIntent = new Intent(ModelActivity.this, DifficultyActivity.class);
+                // 跳转到难度选择页面 DifficultyActivity
+                DifficultyIntent.putExtra("model",false);//告诉DifficultyActivity是单机游戏
+                startActivity(DifficultyIntent);
 
                 break;
 
             case R.id.online_btn:  // 进行网络连接
                 clientThread = new ClientThread(handler);  //
                 new Thread(clientThread).start();
+                //todo 核验是否登录
+
+                //todo 若没有登录 提示前去登录 并跳转
+
+                //todo 若已经登录成功，进入匹配页面  match
+                onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);
+                onlineDifficultyIntent.putExtra("model",true);//告诉DifficultyActivity是联网游戏
+                startActivity(onlineDifficultyIntent);
+
                 break;
         }
     }
