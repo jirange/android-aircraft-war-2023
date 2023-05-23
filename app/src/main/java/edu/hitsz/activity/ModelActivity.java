@@ -68,13 +68,20 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                 clientThread = new ClientThread(handler);  //
                 new Thread(clientThread).start();
                 //todo 核验是否登录
-                while (!MainActivity.have_login) {
+                if (!MainActivity.have_login){
                     //todo 若没有登录 提示前去登录 并跳转
                     Toast.makeText(ModelActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
                     Toast.makeText(ModelActivity.this, "已为您跳转到登录页面", Toast.LENGTH_SHORT).show();
                     //todo 转到登录界面
                     Intent loginIntent = new Intent(ModelActivity.this, LoginActivity.class);
                     startActivity(loginIntent);
+                }
+                while (!MainActivity.have_login) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 //todo 若已经登录成功，进入匹配页面  match
                 onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);

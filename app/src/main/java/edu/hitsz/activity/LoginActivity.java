@@ -81,10 +81,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             System.out.println("注册成功");
                             Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
 
-                            //todo 设置为已经登录
-                            MainActivity.have_login=true;
-                            //todo 返回主界面
-                            finish();
+//                            //todo 设置为已经登录
+//                            MainActivity.have_login=true;
+//                            //todo 返回主界面
+//                            finish();
 
                             break;
                         case "register_failed":
