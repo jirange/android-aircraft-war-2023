@@ -48,7 +48,10 @@ public class UserClientThread implements Runnable {
             System.out.println("我好了我好无法建瓯市附件");
             //初始化输入输出流
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream(), "UTF-8")), true);
             System.out.println("你发的十大");
+            Log.i("UserClientThread", "in" + in + "@@" + out);
 
 
             //创建子线程，
@@ -57,16 +60,24 @@ public class UserClientThread implements Runnable {
                 public void run() {
                     String fromserver = null;
                     try {
-                        System.out.println("传回的是" + in);
-                        while (in != null) {
-                            System.out.println(":n传回的是n传回的是n");
+                        while ((fromserver = in.readLine()) != null) {
                             Message servermsg = new Message();
-                            String s = in.readLine();
-                            System.out.println("str " + s);
                             servermsg.what = 0x113;
-                            servermsg.obj = s;//服务器返回的东西  操作的返回值
-                            toclientHandler.sendMessage(servermsg);//将其返回给操作类
+                            servermsg.obj = fromserver;
+                            System.out.println("返回的字符串时"+fromserver);
+                            toclientHandler.sendMessage(servermsg);
                         }
+
+//                        System.out.println("传回的是" + in);
+//                        while (in != null) {
+//                            System.out.println(":n传回的是n传回的是n");
+//                            Message servermsg = new Message();
+//                            String s = in.readLine();
+//                            System.out.println("str " + s);
+//                            servermsg.what = 0x113;
+//                            servermsg.obj = s;//服务器返回的东西  操作的返回值
+//                            toclientHandler.sendMessage(servermsg);//将其返回给操作类
+//                        }
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -74,8 +85,8 @@ public class UserClientThread implements Runnable {
                 }
             }.start();
 
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream(), "UTF-8")), true);
+//            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+//                    socket.getOutputStream(), "UTF-8")), true);
             System.out.println("分布式的");
             Looper.prepare();  //在子线程中初始化一个Looper对象，即为当前线程创建消息队列
             System.out.println("qqqq");
