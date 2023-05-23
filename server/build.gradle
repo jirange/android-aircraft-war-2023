@@ -1,0 +1,18 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    implementation files('libs\\commons-beanutils.jar')
+    implementation files('libs\\commons-collections-3.0.jar')
+    implementation files('libs\\commons-lang-2.1.jar')
+    implementation files('libs\\commons-logging.jar')
+    implementation files('libs\\ezmorph-1.0.2.jar')
+    implementation files('libs\\json-lib-1.1-jdk13.jar')
+    implementation files('libs\\sqlite-jdbc-3.36.0.3.jar')
+}
