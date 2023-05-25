@@ -13,6 +13,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import edu.hitsz.activity.GameActivity;
+import edu.hitsz.activity.OnlieRecordsActivity;
 import edu.hitsz.network.ClientThread;
 import edu.hitsz.pojo.PlayerRecord;
 
@@ -23,7 +24,7 @@ public class RecordsDaoIntDBImpl implements RecordDao {
     List<PlayerRecord> records;
     int diff = GameActivity.difficulty;
 
-    public RecordsDaoIntDBImpl() {
+    public RecordsDaoIntDBImpl(OnlieRecordsActivity onlieRecordsActivity) {
         this.diff = GameActivity.difficulty;
         handler = new Handler(getMainLooper()) {
             @Override

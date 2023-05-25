@@ -1,24 +1,33 @@
 package edu.hitsz.game;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.hitsz.ImageManager;
+import edu.hitsz.activity.GameActivity;
+import edu.hitsz.activity.LoginActivity;
 import edu.hitsz.activity.MainActivity;
+import edu.hitsz.activity.ModelActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.enemy.AbstractEnemyAircraft;
@@ -43,6 +52,8 @@ import edu.hitsz.strategy.shoot.ScatteringShoot;
 public abstract class OnlineBaseGame extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     private UserClientThread clientThread;
+    private Handler clientThreadHandler;
+    private int matchScore = 0;
 
 
     public static final String TAG = "BaseGame";
@@ -140,8 +151,7 @@ public abstract class OnlineBaseGame extends SurfaceView implements SurfaceHolde
 
 
         heroController();
-        clientThread = new UserClientThread(handler);  //
-        new Thread(clientThread).start();
+
     }
 
     /**
@@ -273,12 +283,12 @@ public abstract class OnlineBaseGame extends SurfaceView implements SurfaceHolde
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
 //            if (bullet != null) {
-                bullet.forward();
+            bullet.forward();
 //            }
         }
         for (BaseBullet bullet : enemyBullets) {
 //            if (bullet != null) {
-                bullet.forward();
+            bullet.forward();
 //            }
         }
     }
@@ -523,6 +533,31 @@ public abstract class OnlineBaseGame extends SurfaceView implements SurfaceHolde
                 }
             }
         }).start();
+        if (GameActivity.online) {
+            new Thread(() -> {
+                while (mbLoop) {   //游戏结束停止绘制
+                    Message msg;
+                    msg = new Message();
+                    msg.what = 0x111;
+                    msg.obj = score;
+                    while (true) {
+                        if (clientThread.toserverHandler != null) break;
+                    }
+                    clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+            int x = 10;
+            int y = 100;
+            canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            y = y + 60;
+        }
 
         while (mbLoop) {   //游戏结束停止绘制
             synchronized (mSurfaceHolder) {

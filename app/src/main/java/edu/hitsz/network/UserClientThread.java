@@ -29,6 +29,13 @@ public class UserClientThread implements Runnable {
     private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
+    public static UserClientThread clientThread;
+
+
+    public void setToclientHandler(Handler toclientHandler) {
+        this.toclientHandler = toclientHandler;
+    }
+
     private Handler toclientHandler;     // 向UI线程发送消息的Handler对象
     public Handler toserverHandler;  // 接收UI线程消息的Handler对象
     private BufferedReader in = null;
@@ -61,39 +68,44 @@ public class UserClientThread implements Runnable {
                     String fromserver = null;
                     try {
                         while ((fromserver = in.readLine()) != null) {
+                            System.out.println("fromserver"+fromserver);
+                            if (fromserver.endsWith("0")){
+                                Message servermsg = new Message();
+                                servermsg.what = 0x103;
+                                servermsg.obj = fromserver;
+                                System.out.println("返回的match score"+fromserver);
+                                toclientHandler.sendMessage(servermsg);
+                            }
                             Message servermsg = new Message();
                             servermsg.what = 0x113;
                             servermsg.obj = fromserver;
                             System.out.println("返回的字符串时"+fromserver);
                             toclientHandler.sendMessage(servermsg);
                         }
-
-//                        System.out.println("传回的是" + in);
-//                        while (in != null) {
-//                            System.out.println(":n传回的是n传回的是n");
-//                            Message servermsg = new Message();
-//                            String s = in.readLine();
-//                            System.out.println("str " + s);
-//                            servermsg.what = 0x113;
-//                            servermsg.obj = s;//服务器返回的东西  操作的返回值
-//                            toclientHandler.sendMessage(servermsg);//将其返回给操作类
-//                        }
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }.start();
 
-//            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-//                    socket.getOutputStream(), "UTF-8")), true);
+
             System.out.println("分布式的");
             Looper.prepare();  //在子线程中初始化一个Looper对象，即为当前线程创建消息队列
             System.out.println("qqqq");
             toserverHandler = new Handler(Looper.myLooper()) {  //实例化Handler对象
                 @Override
                 public void handleMessage(Message msg) {
-                    if (msg.what == 0x456) {//456是操作类发给该类clientThread的，即需要传输的对象
+                    if (msg.what == 0x111){//传分数的
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("score", msg.obj);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        out.println(jsonObject.toString());  //将输出流包装为打印流  对象为键值对 or json
+                        System.out.println("向数据库发送"+jsonObject.toString());
+                        Log.i(TAG, "json score= " + jsonObject.toString());
+                    }else if (msg.what == 0x456) {//456是操作类发给该类clientThread的，即需要传输的对象
                         try {
                             JSONObject jsonObject = (JSONObject) msg.obj;
                             out.println(jsonObject.toString());  //将输出流包装为打印流  对象为键值对 or json

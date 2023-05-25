@@ -36,7 +36,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "LoginActivity";
     private Handler handler;
 //    private ClientThread clientThread;
-    private UserClientThread clientThread;
+//    private UserClientThread clientThread;
+    public static User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,19 +103,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         };
 
 //        clientThread = new ClientThread(handler);  //
-        clientThread = new UserClientThread(handler);  //
-        new Thread(clientThread).start();
+        UserClientThread.clientThread = new UserClientThread(handler);  //
+        new Thread(UserClientThread.clientThread).start();
 
     }
 
     @Override
     public void onClick(View v) {
         final View lv = v;
-        final Map<String, String> paramsmap = new HashMap<>();
-        paramsmap.put("username", l_name.getText().toString());
-        paramsmap.put("password", l_pwd.getText().toString());
+//        final Map<String, String> paramsmap = new HashMap<>();
+//        paramsmap.put("username", l_name.getText().toString());
+//        paramsmap.put("password", l_pwd.getText().toString());
         JSONObject jsonObject = new JSONObject();
-        User user = new User(l_name.getText().toString(), l_pwd.getText().toString());
+        user = new User(l_name.getText().toString(), l_pwd.getText().toString());
         System.out.println(user);
         JSONObject userJson = new JSONObject();
         try {
@@ -151,9 +153,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     msg.obj = jsonObject;
                     System.out.println("向数据库发送"+jsonObject.toString());
                     while (true){
-                        if (clientThread.toserverHandler!=null) break;
+                        if (UserClientThread.clientThread.toserverHandler!=null) break;
                     }
-                    clientThread.toserverHandler.sendMessage(msg);//具体信息
+                    UserClientThread.clientThread.toserverHandler.sendMessage(msg);//具体信息
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

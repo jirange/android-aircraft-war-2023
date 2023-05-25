@@ -20,7 +20,7 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
     private Button single_btn;
     private Button online_btn;
     private Handler handler;
-    private ClientThread clientThread;
+//    private ClientThread clientThread;
     Intent DifficultyIntent;
     Intent onlineDifficultyIntent;
 
@@ -65,8 +65,8 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.online_btn:  // 进行网络连接
-                clientThread = new ClientThread(handler);  //
-                new Thread(clientThread).start();
+//                clientThread = new ClientThread(handler);  //
+//                new Thread(clientThread).start();
                 //todo 核验是否登录
                 if (!MainActivity.have_login){
                     //todo 若没有登录 提示前去登录 并跳转
@@ -75,19 +75,36 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                     //todo 转到登录界面
                     Intent loginIntent = new Intent(ModelActivity.this, LoginActivity.class);
                     startActivity(loginIntent);
+//                    try {
+//                        wait();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
-                while (!MainActivity.have_login) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+
+                new Thread(()->{
+                    while (true){
+                        if (MainActivity.have_login){
+                            //todo 若已经登录成功，进入匹配页面  match
+                            onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);
+                            onlineDifficultyIntent.putExtra("model", true);//告诉DifficultyActivity是联网游戏
+                            startActivity(onlineDifficultyIntent);
+                            break;
+                        }
                     }
-                }
-                //todo 若已经登录成功，进入匹配页面  match
-                onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);
-                onlineDifficultyIntent.putExtra("model", true);//告诉DifficultyActivity是联网游戏
-                startActivity(onlineDifficultyIntent);
+                }).start();
+
+
                 break;
+
+//                while (true){
+//                    if (MainActivity.have_login) break;
+//                }
+//                //todo 若已经登录成功，进入匹配页面  match
+//                onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);
+//                onlineDifficultyIntent.putExtra("model", true);//告诉DifficultyActivity是联网游戏
+//                startActivity(onlineDifficultyIntent);
+//                break;
         }
     }
 

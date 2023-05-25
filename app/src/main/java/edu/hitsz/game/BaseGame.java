@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -18,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.hitsz.ImageManager;
+import edu.hitsz.activity.GameActivity;
 import edu.hitsz.activity.MainActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
@@ -27,6 +29,7 @@ import edu.hitsz.aircraft.enemy.factory.EnemyFactory;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.music.MySoundPool;
+import edu.hitsz.network.UserClientThread;
 import edu.hitsz.observer.Subscriber;
 import edu.hitsz.prop.BaseProp;
 import edu.hitsz.prop.BombProp;
@@ -40,6 +43,11 @@ import edu.hitsz.strategy.shoot.ScatteringShoot;
  * @author hitsz
  */
 public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+
+    private UserClientThread clientThread;
+    private Handler clientThreadHandler;
+    private int matchScore = 0;
+
 
     public static final String TAG = "BaseGame";
     boolean mbLoop = false; //控制绘画线程的标志位
@@ -136,6 +144,20 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
         heroController();
+        if (GameActivity.online){
+            clientThreadHandler = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    //如果消息来自于子线程  clientThread  即数据库操作的返回值
+                    if (msg.what == 0x103) {
+                        System.out.println("matcher score" + msg.obj);
+                        matchScore = (int) msg.obj;
+                    }
+                }
+            };
+            clientThread = new UserClientThread(clientThreadHandler);  //
+            new Thread(clientThread).start();
+        }
     }
 
     /**
@@ -518,11 +540,38 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             }
         }).start();
 
+        if (GameActivity.online) {
+            new Thread(() -> {
+                while (mbLoop) {   //游戏结束停止绘制
+                    Message msg;
+                    msg = new Message();
+                    msg.what = 0x111;
+                    msg.obj = score;
+                    while (true) {
+                        if (clientThread.toserverHandler != null) break;
+                    }
+                    clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+            int x = 10;
+            int y = 100;
+            canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            y = y + 60;
+        }
+
         while (mbLoop) {   //游戏结束停止绘制
             synchronized (mSurfaceHolder) {
                 draw();
             }
         }
+
         Message message = Message.obtain();
         message.what = 1;
         message.obj = score;

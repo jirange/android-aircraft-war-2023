@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity {
 
     private int gameType = 0;
     private boolean haveAudio = false;
+    public static boolean online = false;
     Intent musicIntent;
 
     @Override
@@ -61,7 +62,12 @@ public class GameActivity extends AppCompatActivity {
                     Toast.makeText(GameActivity.this, "GameOver", Toast.LENGTH_SHORT).show();//原来在下面 地方了
 
                     //todo 游戏结束 打印排行榜  开启RecordsActivity
-                    Intent recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
+                    Intent recordsIntent;
+                    if (online){
+                        recordsIntent = new Intent(GameActivity.this, OnlieRecordsActivity.class);
+                    }else {
+                        recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
+                    }
                     recordsIntent.putExtra("difficulty", difficulty);
                     recordsIntent.putExtra("score", (int) msg.obj);
                     startActivity(recordsIntent);
@@ -71,7 +77,7 @@ public class GameActivity extends AppCompatActivity {
         if (getIntent() != null) {
             gameType = getIntent().getIntExtra("gameType", 1);
             haveAudio = getIntent().getBooleanExtra("have_audio", false);
-
+            online = getIntent().getBooleanExtra("online",false);
         }
         BaseGame basGameView;
 
