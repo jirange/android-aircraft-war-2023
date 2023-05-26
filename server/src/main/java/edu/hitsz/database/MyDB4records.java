@@ -18,8 +18,8 @@ public class MyDB4records {
 
     public static void main(String args[]){
 //        createDataBase();
-//        createTable();
-//        createNewAccount(new PlayerRecord(1,1,"nihao",250,new Date()));
+        createTable();
+        createNewAccount(new PlayerRecord(1,1,"nihao",250,new Date()));
 //        getAllUser(1);
 //        delete(" r_score = 1 ");
     }
