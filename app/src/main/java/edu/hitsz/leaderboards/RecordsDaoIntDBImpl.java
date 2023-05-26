@@ -9,11 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import edu.hitsz.activity.GameActivity;
-import edu.hitsz.activity.OnlieRecordsActivity;
+import edu.hitsz.activity.RecordsActivity;
 import edu.hitsz.network.ClientThread;
 import edu.hitsz.pojo.PlayerRecord;
 
@@ -24,7 +24,7 @@ public class RecordsDaoIntDBImpl implements RecordDao {
     List<PlayerRecord> records;
     int diff = GameActivity.difficulty;
 
-    public RecordsDaoIntDBImpl(OnlieRecordsActivity onlieRecordsActivity) {
+    public RecordsDaoIntDBImpl(RecordsActivity recordsActivity) {
         this.diff = GameActivity.difficulty;
         handler = new Handler(getMainLooper()) {
             @Override
@@ -79,13 +79,16 @@ public class RecordsDaoIntDBImpl implements RecordDao {
     @Override
     public List<PlayerRecord> getAllRecords(int diff) {
         this.diff = diff;
+        getAll(diff);
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (true)
+        {
+            if (records != null)
+                break;
         }
+        System.out.println("我返回的records是："+records);
         return records;
+
     }
 
     private void getAll(int diff) {

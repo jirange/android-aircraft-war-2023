@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.hitsz.R;
+import edu.hitsz.leaderboards.RecordDao;
+import edu.hitsz.leaderboards.RecordsDaoIntDBImpl;
 import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.leaderboards.RecordsDaoDBImpl;
 
@@ -27,7 +29,7 @@ public class RecordsActivity extends AppCompatActivity {
     private static final String TAG = "RecordsActivity";
     private int difficulty = 0;
     private int score = 0;
-    RecordsDaoDBImpl recordsDaoDB;
+    RecordDao recordsDaoDB;
     ArrayList<HashMap<String, String>> data;
     SimpleAdapter listItemAdapter;
     //Layout里面的ListView
@@ -43,7 +45,12 @@ public class RecordsActivity extends AppCompatActivity {
             difficulty = getIntent().getIntExtra("difficulty", 1);
             score = getIntent().getIntExtra("score", 0);
         }
-        recordsDaoDB = new RecordsDaoDBImpl(RecordsActivity.this);
+        if (GameActivity.online){
+            recordsDaoDB = new RecordsDaoIntDBImpl(RecordsActivity.this);
+        }else{
+            recordsDaoDB = new RecordsDaoDBImpl(RecordsActivity.this);
+
+        }
 
         data = getData();
 
@@ -63,10 +70,15 @@ public class RecordsActivity extends AppCompatActivity {
         //获得Layout里面的TextView 设置标题 显示难度
         TextView titleView = (TextView) findViewById(R.id.title);
         titleView.setText(getString(R.string.difficultyChoice,PlayerRecord.getDifficultyStr(difficulty)));
+
         update();
 
         //todo 询问是否加入记录
-        addRecordsAfterGame(score);
+        if (GameActivity.online){
+            onlineAddRecord(score);
+        }else {
+            addRecordsAfterGame(score);
+        }
         update();
 
         //todo 添加长按删除
@@ -102,7 +114,7 @@ public class RecordsActivity extends AppCompatActivity {
         });
     }
 
-    private void update() {
+    public void update() {
         //获得Layout里面的ListView
         list = (ListView) findViewById(R.id.leaderboards_list);
         //生成适配器的Item和动态数组对应的元素
@@ -133,6 +145,7 @@ public class RecordsActivity extends AppCompatActivity {
                 map.put("date", record.getRecordTimeStr());
                 data.add(map);
             }
+            System.out.println("正在装在数据"+allRecords);
         } else {
             System.out.println("空的");
         }
@@ -163,6 +176,15 @@ public class RecordsActivity extends AppCompatActivity {
                 .show();
     }
 
-
+    public void onlineAddRecord(int score){
+        String input_name = LoginActivity.user.getName();
+        PlayerRecord record = new PlayerRecord(difficulty,input_name, score, new Date());
+        //加入数据
+        recordsDaoDB.doAdd(record);
+        //重新对数据进行排序
+        data = getData();        //重新获取数据
+        //更新排行榜
+        update();
+    }
 
 }

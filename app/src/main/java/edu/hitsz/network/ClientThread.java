@@ -24,7 +24,7 @@ import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.pojo.User;
 
 public class ClientThread implements Runnable {
-//        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
+    //        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
     private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
@@ -61,7 +61,7 @@ public class ClientThread implements Runnable {
                         InputStream is = socket.getInputStream();
                         in = new ObjectInputStream(is);
 
-                        System.out.println("传回的是"+in);
+                        System.out.println("传回的是" + in);
                         while (in != null) {
                             Message servermsg = new Message();
                             List<PlayerRecord> playerRecordList = null;
@@ -72,23 +72,12 @@ public class ClientThread implements Runnable {
 //                                playerRecordList = (List<PlayerRecord>) in.readObject();
 
                                 Object o = in.readObject();
-                                System.out.println("klhjlkij"+o);
-                                if (o instanceof User) {
-                                    System.out.println("传回的是 用户");
-                                    user = (User) o;
-                                    servermsg.what = 0x113;
-                                    servermsg.obj = user;//服务器返回的东西  操作的返回值
-                                } if (o instanceof String) {
-                                    System.out.println("传回的是 Str");
-                                    userMessage = (String) o;
-                                    servermsg.what = 0x113;
-                                    servermsg.obj = userMessage;//服务器返回的东西  操作的返回值
-                                } else{
-                                    System.out.println("传回的是 记录");
-                                    playerRecordList = (List<PlayerRecord>) o;
-                                    servermsg.what = 0x123;
-                                    servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
-                                }
+                                System.out.println("klhjlkij" + o);
+
+                                playerRecordList = (List<PlayerRecord>) o;
+                                servermsg.what = 0x123;
+                                servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
+
 
 //                                if (((List<?>) o).iterator().hasNext()) {
 //                                    if (((List<?>) o).iterator().next() instanceof PlayerRecord) {

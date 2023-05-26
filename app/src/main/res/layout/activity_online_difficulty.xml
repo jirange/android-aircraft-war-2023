@@ -56,9 +56,20 @@
             android:spinnerMode="dropdown" />
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="100dp" />
+<!--    <Space-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp" />-->
+    <Switch
+        android:id="@+id/online_video_btn"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:checked="true"
+        android:text="@string/have_video"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:typeface="serif"></Switch>
 
     <Button
         android:id="@+id/match_btn"
@@ -71,15 +82,5 @@
         android:textStyle="bold"
         android:typeface="serif"></Button>
 
-    <Switch
-        android:id="@+id/online_video_btn"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="80dp"
-        android:checked="true"
-        android:text="@string/have_video"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:typeface="serif"></Switch>
+
 </LinearLayout>

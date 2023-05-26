@@ -63,11 +63,11 @@ public class GameActivity extends AppCompatActivity {
 
                     //todo 游戏结束 打印排行榜  开启RecordsActivity
                     Intent recordsIntent;
-                    if (online){
-                        recordsIntent = new Intent(GameActivity.this, OnlieRecordsActivity.class);
-                    }else {
+//                    if (online){
+//                        recordsIntent = new Intent(GameActivity.this, OnlieRecordsActivity.class);
+//                    }else {
                         recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
-                    }
+//                    }
                     recordsIntent.putExtra("difficulty", difficulty);
                     recordsIntent.putExtra("score", (int) msg.obj);
                     startActivity(recordsIntent);
@@ -81,7 +81,7 @@ public class GameActivity extends AppCompatActivity {
         }
         BaseGame basGameView;
 
-        if (gameType == 1) {
+        if (gameType == 2) {
             basGameView = new MediumGame(this, handler);
             difficulty = 2;
 
@@ -92,10 +92,12 @@ public class GameActivity extends AppCompatActivity {
             basGameView = new EasyGame(this, handler);
             difficulty = 1;
         }
+
         setContentView(basGameView);
         if (haveAudio) {
             musicIntent = new Intent(this, MusicService.class);
             musicIntent.putExtra("action", "play");
+            System.out.println("我执行了吗"+haveAudio);
             startService(musicIntent);
 
             MySoundPool.initialSoundPoolMap(this);

@@ -35,15 +35,15 @@ public class DifficultyActivity extends AppCompatActivity {
 
         Intent intent = new Intent(DifficultyActivity.this, GameActivity.class);
 
-        medium_btn.setOnClickListener(view -> {
-            gameType=1;
+        easy_btn.setOnClickListener(view -> {
+            gameType =1;
             intent.putExtra("gameType",gameType);
             intent.putExtra("have_audio",have_audio);
             startActivity(intent);
         });
 
-        easy_btn.setOnClickListener(view -> {
-            gameType =2;
+        medium_btn.setOnClickListener(view -> {
+            gameType=2;
             intent.putExtra("gameType",gameType);
             intent.putExtra("have_audio",have_audio);
             startActivity(intent);
@@ -71,12 +71,12 @@ public class DifficultyActivity extends AppCompatActivity {
                 }
             }
         });
-
-        if (isOnline){
-
-        }else{
-
-        }
+//
+//        if (isOnline){
+//
+//        }else{
+//
+//        }
     }
 
     @Override

@@ -29,6 +29,15 @@ public class UserClientThread implements Runnable {
     private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
+
+    public static UserClientThread getClientThread(Handler myhandler) {
+        if (clientThread==null){
+            clientThread = new UserClientThread(myhandler);
+        }
+        clientThread.toclientHandler = myhandler;
+        return clientThread;
+    }
+
     public static UserClientThread clientThread;
 
 
@@ -68,19 +77,20 @@ public class UserClientThread implements Runnable {
                     String fromserver = null;
                     try {
                         while ((fromserver = in.readLine()) != null) {
-                            System.out.println("fromserver"+fromserver);
-                            if (fromserver.endsWith("0")){
+                            System.out.println("fromserver" + fromserver);
+                            if (fromserver.endsWith("0")) {
                                 Message servermsg = new Message();
                                 servermsg.what = 0x103;
                                 servermsg.obj = fromserver;
-                                System.out.println("返回的match score"+fromserver);
+                                System.out.println("返回的match score" + fromserver);
+                                toclientHandler.sendMessage(servermsg);
+                            } else {
+                                Message servermsg = new Message();
+                                servermsg.what = 0x113;
+                                servermsg.obj = fromserver;
+                                System.out.println("返回的字符串时" + fromserver);
                                 toclientHandler.sendMessage(servermsg);
                             }
-                            Message servermsg = new Message();
-                            servermsg.what = 0x113;
-                            servermsg.obj = fromserver;
-                            System.out.println("返回的字符串时"+fromserver);
-                            toclientHandler.sendMessage(servermsg);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -95,7 +105,7 @@ public class UserClientThread implements Runnable {
             toserverHandler = new Handler(Looper.myLooper()) {  //实例化Handler对象
                 @Override
                 public void handleMessage(Message msg) {
-                    if (msg.what == 0x111){//传分数的
+                    if (msg.what == 0x111) {//传分数的
                         JSONObject jsonObject = new JSONObject();
                         try {
                             jsonObject.put("score", msg.obj);
@@ -103,9 +113,9 @@ public class UserClientThread implements Runnable {
                             e.printStackTrace();
                         }
                         out.println(jsonObject.toString());  //将输出流包装为打印流  对象为键值对 or json
-                        System.out.println("向数据库发送"+jsonObject.toString());
+                        System.out.println("向数据库发送" + jsonObject.toString());
                         Log.i(TAG, "json score= " + jsonObject.toString());
-                    }else if (msg.what == 0x456) {//456是操作类发给该类clientThread的，即需要传输的对象
+                    } else if (msg.what == 0x456) {//456是操作类发给该类clientThread的，即需要传输的对象
                         try {
                             JSONObject jsonObject = (JSONObject) msg.obj;
                             out.println(jsonObject.toString());  //将输出流包装为打印流  对象为键值对 or json

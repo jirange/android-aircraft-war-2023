@@ -20,6 +20,7 @@ import java.util.List;
 
 import edu.hitsz.ImageManager;
 import edu.hitsz.activity.GameActivity;
+import edu.hitsz.activity.LoginActivity;
 import edu.hitsz.activity.MainActivity;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
@@ -144,19 +145,24 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
         heroController();
-        if (GameActivity.online){
+        if (GameActivity.online) {
             clientThreadHandler = new Handler(Looper.getMainLooper()) {
                 @Override
                 public void handleMessage(Message msg) {
                     //如果消息来自于子线程  clientThread  即数据库操作的返回值
                     if (msg.what == 0x103) {
                         System.out.println("matcher score" + msg.obj);
-                        matchScore = (int) msg.obj;
+                        if (msg.obj == null) {
+                            matchScore = 0;
+                        } else {
+                            matchScore = Integer.valueOf((String) msg.obj);
+                        }
                     }
                 }
             };
-            clientThread = new UserClientThread(clientThreadHandler);  //
-            new Thread(clientThread).start();
+            clientThread = UserClientThread.getClientThread(clientThreadHandler);
+//            clientThread = new UserClientThread(clientThreadHandler);  //
+//            new Thread(clientThread).start();
         }
     }
 
@@ -289,12 +295,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
 //            if (bullet != null) {
-                bullet.forward();
+            bullet.forward();
 //            }
         }
         for (BaseBullet bullet : enemyBullets) {
 //            if (bullet != null) {
-                bullet.forward();
+            bullet.forward();
 //            }
         }
     }
@@ -508,6 +514,11 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         canvas.drawText("SCORE:" + this.score, x, y, mPaint);
         y = y + 60;
         canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
+        if (GameActivity.online) {
+            y = y + 60;
+            canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+        }
+
     }
 
     @Override
@@ -560,10 +571,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 }
             }).start();
 
-            int x = 10;
-            int y = 100;
-            canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
-            y = y + 60;
+
         }
 
         while (mbLoop) {   //游戏结束停止绘制

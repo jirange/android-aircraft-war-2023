@@ -1,10 +1,10 @@
 package edu.hitsz.activity;
 
-import static android.os.Looper.getMainLooper;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,29 +61,6 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
-
-        match_btn.setOnClickListener(view -> {
-            intent.putExtra("gameType", gameType);
-            intent.putExtra("have_audio", have_audio);
-            intent.putExtra("online", true);
-
-            //todo 发送匹配请求
-            Toast.makeText(OnlineDifficultyActivity.this, "匹配中...", Toast.LENGTH_SHORT).show();//原来在下面 地方了
-            askMatch();
-
-            new Thread(() -> {
-                while (true) {
-                    if (have_match) {
-                        //匹配成功的话
-                        startActivity(intent);
-                        break;
-                    }
-                }
-            }).start();
-
-        });
-
 
         video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -101,15 +78,47 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
         });
 
 
+        match_btn.setOnClickListener(view -> {
+
+
+            //todo 发送匹配请求
+            Toast.makeText(OnlineDifficultyActivity.this, "匹配中...", Toast.LENGTH_SHORT).show();
+            askMatch();
+
+            new Thread(() -> {
+                while (true) {
+                    if (have_match) {
+                        Intent gameIntent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
+                        gameIntent.putExtra("gameType", gameType);
+                        gameIntent.putExtra("have_audio", have_audio);
+                        gameIntent.putExtra("online", true);
+                        Looper.prepare();
+                        Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
+                        //匹配成功的话
+                        startActivity(gameIntent);
+                        break;
+                    }
+                }
+            }).start();
+
+        });
+
+
+
+
+
         handler = new Handler(getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 //如果消息来自于子线程  clientThread  即数据库操作的返回值
-                if (msg.what == 0x123) {
+                if (msg.what == 0x113) {
                     System.out.println("在online diff 中处理消息了" + msg.obj);
                     String msgStr = (String) msg.obj;
                     if (msgStr.equals("match_success")) {
                         have_match = true;
+                        System.out.println("看看我执行了吗");
+                    }else if (msgStr.equals("match_fail")){
+                        have_match = false;
                         System.out.println("看看我执行了吗");
                     }
                 }
