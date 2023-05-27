@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="180dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:orientation="horizontal"
@@ -47,6 +47,29 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/host"
+            android:textSize="18sp"
+
+            />
+        <EditText
+            android:id="@+id/l_host"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/DefaultHost"
             android:layout_weight="1"
             />
     </LinearLayout>

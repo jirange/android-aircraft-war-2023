@@ -158,10 +158,14 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                         }
                         else {
                             matchScore = Integer.valueOf((String) msg.obj);
-                            if (matchScore < 0){
+                            if (matchScore < -1){
                                 System.out.println("对方死亡");
                                 matchDead = true;
                                 matchScore = -matchScore;
+                            }else if(matchScore == -1){
+                                System.out.println("对方死亡");
+                                matchDead = true;
+                                matchScore = 0;
                             }
                         }
                     }
@@ -169,6 +173,9 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             };
             clientThread = UserClientThread.getClientThread(clientThreadHandler);
         }
+
+        //避免下一句的时候还是true
+        matchDead = false;
     }
 
     /**
@@ -593,7 +600,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         Message msg;
         msg = new Message();
         msg.what = 0x111;
-        msg.obj = -score;
+        if (score==0){
+            msg.obj = -1;
+
+        }else {
+            msg.obj = -score;
+        }
         while (true) {
             if (clientThread.toserverHandler != null) break;
         }
@@ -602,6 +614,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         while (!matchDead){
             synchronized (this) {
                 draw();
+//                System.out.println("gg");
             }
         }
         if (matchDead){

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,11 +39,19 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
     private Handler handler;
     private UserClientThread clientThread;
     public static boolean have_match;
+    private TextView matching_textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_difficulty);
+
+        have_match = false;
+
+        matching_textView = findViewById(R.id.matching_textView);
+        matching_textView.setVisibility(View.INVISIBLE);
+
+
         Switch video_btn = (Switch) findViewById(R.id.online_video_btn);
         Button match_btn = (Button) findViewById(R.id.match_btn);
         this.difficultySp = (Spinner) findViewById(R.id.sp_difficulty);
@@ -79,32 +88,39 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
 
 
         match_btn.setOnClickListener(view -> {
-
+//            Toast toast = Toast.makeText(OnlineDifficultyActivity.this, "匹配中", Toast.LENGTH_SHORT);
+//            toast.cancel();
 
             //todo 发送匹配请求
-            Toast.makeText(OnlineDifficultyActivity.this, "匹配中...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(OnlineDifficultyActivity.this, "开始匹配...", Toast.LENGTH_SHORT).show();
+//            new Thread(() -> {
+////                Looper.prepare();
+            if (!have_match) {
+                matching_textView.setVisibility(View.VISIBLE);
+//                    toast.show();
+                //匹配成功的话
+//                    break;
+            }
+//            }).start();
             askMatch();
 
-            new Thread(() -> {
-                while (true) {
-                    if (have_match) {
-                        Intent gameIntent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
-                        gameIntent.putExtra("gameType", gameType);
-                        gameIntent.putExtra("have_audio", have_audio);
-                        gameIntent.putExtra("online", true);
-                        Looper.prepare();
-                        Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
-                        //匹配成功的话
-                        startActivity(gameIntent);
-                        break;
-                    }
-                }
-            }).start();
+//            new Thread(() -> {
+//                while (true) {
+//                    if (have_match) {
+//                        Intent gameIntent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
+//                        gameIntent.putExtra("gameType", gameType);
+//                        gameIntent.putExtra("have_audio", have_audio);
+//                        gameIntent.putExtra("online", true);
+//                        Looper.prepare();
+//                        Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
+//                        //匹配成功的话
+//                        startActivity(gameIntent);
+//                        break;
+//                    }
+//                }
+//            }).start();
 
         });
-
-
-
 
 
         handler = new Handler(getMainLooper()) {
@@ -114,13 +130,30 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
                 if (msg.what == 0x113) {
                     System.out.println("在online diff 中处理消息了" + msg.obj);
                     String msgStr = (String) msg.obj;
-                    if (msgStr.equals("match_success")) {
-                        have_match = true;
-                        System.out.println("看看我执行了吗");
-                    }else if (msgStr.equals("match_fail")){
+                    if (msgStr.equals("match_fail")) {
                         have_match = false;
                         System.out.println("看看我执行了吗");
+                    } else if (msgStr != null) {
+                        String s1 = msgStr.split("-")[0];
+                        String s2 = msgStr.split("-")[1];
+                        if (s1.equals("match_success")) {
+                            have_match = true;
+                            matching_textView.setVisibility(View.INVISIBLE);
+
+                            System.out.println("看看我执行了吗");
+                            LoginActivity.user.matchName = s2;
+
+                            Intent gameIntent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
+                            gameIntent.putExtra("gameType", gameType);
+                            gameIntent.putExtra("have_audio", have_audio);
+                            gameIntent.putExtra("online", true);
+//                            Looper.prepare();
+//                            Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
+                            //匹配成功的话
+                            startActivity(gameIntent);
+                        }
                     }
+
                 }
             }
         };
@@ -131,6 +164,7 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
     }
 
     private void askMatch() {
+        have_match = false;
         UserClientThread.clientThread.setToclientHandler(handler);
 
         JSONObject jsonObject = new JSONObject();

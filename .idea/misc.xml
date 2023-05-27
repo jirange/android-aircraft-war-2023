@@ -17,8 +17,13 @@
         <entry key="..\:/DevelopJava/course/code/AircraftWar2023/app/src/main/res/layout/listitem.xml" value="0.1" />
         <entry key="..\:/DevelopJava/course/code/AircraftWar2023/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.291" />
         <entry key="..\:/DevelopJava/course/code/AircraftWar2023/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2705" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.263" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_chatroom.xml" value="0.12892603850050657" />
         <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_difficulty_choice.xml" value="0.1" />
-        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_online_difficulty.xml" value="0.1" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_leaderboards.xml" value="0.11979166666666667" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/activity_online_difficulty.xml" value="0.22" />
+        <entry key="..\:/Users/lenovo/Desktop/AircraftWar2023/app/src/main/res/layout/listitem.xml" value="0.11979166666666667" />
       </map>
     </option>
   </component>

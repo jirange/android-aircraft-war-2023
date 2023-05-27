@@ -31,13 +31,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText l_name;
     private EditText l_pwd;
+    private EditText l_host;
     private Button l_login, l_register;
-    private String LOGIN_URL = "http://192.168.101.10:9090/Login_Server/login";
+    //    private String LOGIN_URL = "http://192.168.101.10:9090/Login_Server/login";
     private static final String TAG = "LoginActivity";
     private Handler handler;
-//    private ClientThread clientThread;
-//    private UserClientThread clientThread;
+    //    private ClientThread clientThread;
+    private UserClientThread clientThread;
     public static User user;
+    private boolean flag;
 
 
     @Override
@@ -48,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         l_register = findViewById(R.id.l_register);
         l_name = findViewById(R.id.l_name);
         l_pwd = findViewById(R.id.l_pwd);
+        l_host = findViewById(R.id.l_host);
 
 
         l_login.setOnClickListener(this);
@@ -68,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
 
                             //todo 设置为已经登录
-                            MainActivity.have_login=true;
+                            MainActivity.have_login = true;
                             //todo 返回主界面
                             finish();
                             break;
@@ -104,12 +107,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 //        clientThread = new ClientThread(handler);  //
         UserClientThread.clientThread = new UserClientThread(handler);  //
-        new Thread(UserClientThread.clientThread).start();
+//        new Thread(UserClientThread.clientThread).start();
 
+        flag = false;
     }
 
     @Override
     public void onClick(View v) {
+
+        UserClientThread.HOST = l_host.getText().toString();
+        ClientThread.HOST = l_host.getText().toString();
+
+//        clientThread = UserClientThread.getClientThread(handler);
+//        clientThread = UserClientThread.getClientThread(handler);
+//        UserClientThread.clientThread = new UserClientThread(handler);  //
+//        new Thread(UserClientThread.clientThread).start();
+
         final View lv = v;
 //        final Map<String, String> paramsmap = new HashMap<>();
 //        paramsmap.put("username", l_name.getText().toString());
@@ -119,8 +132,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         System.out.println(user);
         JSONObject userJson = new JSONObject();
         try {
-            userJson.put("name",l_name.getText().toString());
-            userJson.put("password",l_pwd.getText().toString());
+            userJson.put("name", l_name.getText().toString());
+            userJson.put("password", l_pwd.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -138,6 +151,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             //todo 发送登录请求 向服务器传递输入的数据
 //                            new Thread(clientThread).start();
                             jsonObject.put("login", userJson);
+                            if (!flag) {
+                                new Thread(UserClientThread.clientThread).start();
+                            }
 
                             break;
                         case R.id.l_register:
@@ -145,15 +161,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             jsonObject.put("register", userJson);
 
                             //todo 发送注册请求 向服务器传递输入的数据
-
+                            new Thread(UserClientThread.clientThread).start();
+                            flag = true;
                             break;
                     }
                     msg = new Message();
                     msg.what = 0x456;
                     msg.obj = jsonObject;
-                    System.out.println("向数据库发送"+jsonObject.toString());
-                    while (true){
-                        if (UserClientThread.clientThread.toserverHandler!=null) break;
+                    System.out.println("向数据库发送" + jsonObject.toString());
+                    while (true) {
+                        if (UserClientThread.clientThread.toserverHandler != null) break;
                     }
                     UserClientThread.clientThread.toserverHandler.sendMessage(msg);//具体信息
                 } catch (Exception e) {

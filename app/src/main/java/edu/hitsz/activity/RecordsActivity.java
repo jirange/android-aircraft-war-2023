@@ -71,17 +71,20 @@ public class RecordsActivity extends AppCompatActivity {
         titleView.setText(getString(R.string.difficultyChoice, PlayerRecord.getDifficultyStr(difficulty)));
 
 
-        //todo 询问是否加入记录
         if (GameActivity.online) {
+            //todo 询问是否加入记录
             onlineAddRecord(score);
+
         } else {
             update();
+            //todo 询问是否加入记录
             addRecordsAfterGame(score);
             update();
+
+            //todo 添加长按删除
+            deleteRecords();
         }
 
-        //todo 添加长按删除
-//        deleteRecords();
 
     }
 
@@ -139,7 +142,14 @@ public class RecordsActivity extends AppCompatActivity {
                 i++;
                 HashMap<String, String> map = new HashMap<>();
                 map.put("rank", String.valueOf(i));
-                map.put("name", record.getPlayerName());
+                String playerName = record.getPlayerName();
+                if (playerName.equals(LoginActivity.user.getName())){
+                    map.put("name", record.getPlayerName()+"(自己)");
+                }else if (playerName.equals(LoginActivity.user.matchName)){
+                    map.put("name", record.getPlayerName()+"(对手)");
+                }else {
+                    map.put("name", record.getPlayerName());
+                }
                 map.put("score", String.valueOf(record.getScore()));
                 map.put("date", record.getRecordTimeStr());
                 data.add(map);

@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import edu.hitsz.pojo.PlayerRecord;
@@ -26,9 +27,10 @@ import edu.hitsz.pojo.User;
 
 public class UserClientThread implements Runnable {
     //        private static final String HOST = "10.250.230.230";//必须和服务器一样 不然就连不上去啊
-    private static final String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
+    public static String HOST = "192.168.56.1";//必须和服务器一样 不然就连不上去啊
     private static final int PORT = 8899;
     private Socket socket = null;
+    public static UserClientThread clientThread;
 
     public static UserClientThread getClientThread(Handler myhandler) {
         if (clientThread==null){
@@ -38,7 +40,6 @@ public class UserClientThread implements Runnable {
         return clientThread;
     }
 
-    public static UserClientThread clientThread;
 
 
     public void setToclientHandler(Handler toclientHandler) {
@@ -54,19 +55,28 @@ public class UserClientThread implements Runnable {
 
     public UserClientThread(Handler myhandler) {
         this.toclientHandler = myhandler;
+        System.out.println("执行了吗0"+HOST);
     }
 
     public void run() {
+        System.out.println("执行了吗1"+HOST);
         try {
             socket = new Socket();
+            System.out.println("执行了吗2");
+
             //运行时修改成服务器的IP
-            socket.connect(new InetSocketAddress(HOST, PORT));
-            System.out.println("我好了我好无法建瓯市附件");
+            try {
+                socket.connect(new InetSocketAddress(HOST, PORT));
+                System.out.println("执行了吗3");
+
+            } catch (UnknownHostException e) {
+                System.out.println("HOST 不正确");
+                e.printStackTrace();
+            }
             //初始化输入输出流
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                     socket.getOutputStream(), "UTF-8")), true);
-            System.out.println("你发的十大");
             Log.i("UserClientThread", "in" + in + "@@" + out);
 
 
@@ -78,11 +88,11 @@ public class UserClientThread implements Runnable {
                     try {
                         while ((fromserver = in.readLine()) != null) {
                             System.out.println("fromserver" + fromserver);
-                            if (fromserver.endsWith("0")) {
+                            if (fromserver.endsWith("0")||fromserver.endsWith("1")) {
                                 Message servermsg = new Message();
                                 servermsg.what = 0x103;
                                 servermsg.obj = fromserver;
-                                System.out.println("返回的match score" + fromserver);
+//                                System.out.println("返回的match score " + fromserver);
                                 toclientHandler.sendMessage(servermsg);
                             } else {
                                 Message servermsg = new Message();
@@ -99,9 +109,7 @@ public class UserClientThread implements Runnable {
             }.start();
 
 
-            System.out.println("分布式的");
             Looper.prepare();  //在子线程中初始化一个Looper对象，即为当前线程创建消息队列
-            System.out.println("qqqq");
             toserverHandler = new Handler(Looper.myLooper()) {  //实例化Handler对象
                 @Override
                 public void handleMessage(Message msg) {
@@ -126,7 +134,6 @@ public class UserClientThread implements Runnable {
                     }
                 }
             };
-            System.out.println("pppp");
             Looper.loop();  //启动Looper，运行刚才初始化的Looper对象，循环取消息队列的消息
 
         } catch (SocketTimeoutException el) {
