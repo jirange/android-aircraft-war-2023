@@ -48,6 +48,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     private UserClientThread clientThread;
     private Handler clientThreadHandler;
     private int matchScore = 0;
+    private boolean matchDead = false;
 
 
     public static final String TAG = "BaseGame";
@@ -154,15 +155,19 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                         System.out.println("matcher score" + msg.obj);
                         if (msg.obj == null) {
                             matchScore = 0;
-                        } else {
+                        }
+                        else {
                             matchScore = Integer.valueOf((String) msg.obj);
+                            if (matchScore < 0){
+                                System.out.println("对方死亡");
+                                matchDead = true;
+                                matchScore = -matchScore;
+                            }
                         }
                     }
                 }
             };
             clientThread = UserClientThread.getClientThread(clientThreadHandler);
-//            clientThread = new UserClientThread(clientThreadHandler);  //
-//            new Thread(clientThread).start();
         }
     }
 
@@ -516,7 +521,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
         if (GameActivity.online) {
             y = y + 60;
-            canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            if (!matchDead){
+                canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            }else {
+                mPaint.setColor(Color.GRAY);
+                canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            }
         }
 
     }
@@ -551,9 +561,9 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             }
         }).start();
 
-        if (GameActivity.online) {
+        if (GameActivity.online&& !matchDead) {//对手死后还向对方发送分数吗？  暂且不发送了
             new Thread(() -> {
-                while (mbLoop) {   //游戏结束停止绘制
+                while (mbLoop ) {   //游戏结束停止绘制
                     Message msg;
                     msg = new Message();
                     msg.what = 0x111;
@@ -564,14 +574,12 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                     clientThread.toserverHandler.sendMessage(msg);//具体信息
 
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(400);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
-
-
         }
 
         while (mbLoop) {   //游戏结束停止绘制
@@ -580,10 +588,28 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             }
         }
 
-        Message message = Message.obtain();
-        message.what = 1;
-        message.obj = score;
-        handler.sendMessage(message);
+
+
+        Message msg;
+        msg = new Message();
+        msg.what = 0x111;
+        msg.obj = -score;
+        while (true) {
+            if (clientThread.toserverHandler != null) break;
+        }
+        clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+        while (!matchDead){
+            synchronized (this) {
+                draw();
+            }
+        }
+        if (matchDead){
+            Message message = Message.obtain();
+            message.what = 1;
+            message.obj = score;
+            handler.sendMessage(message);
+        }
     }
 
 }

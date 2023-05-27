@@ -40,14 +40,13 @@ public class RecordsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-
         if (getIntent() != null) {
             difficulty = getIntent().getIntExtra("difficulty", 1);
             score = getIntent().getIntExtra("score", 0);
         }
-        if (GameActivity.online){
+        if (GameActivity.online) {
             recordsDaoDB = new RecordsDaoIntDBImpl(RecordsActivity.this);
-        }else{
+        } else {
             recordsDaoDB = new RecordsDaoDBImpl(RecordsActivity.this);
 
         }
@@ -61,7 +60,7 @@ public class RecordsActivity extends AppCompatActivity {
         Button return_btn = findViewById(R.id.return_btn);
 
         return_btn.setOnClickListener(view -> {
-            Intent intent = new Intent(RecordsActivity.this, MainActivity.class);
+            Intent intent = new Intent(RecordsActivity.this, StartPageActivity.class);
             startActivity(intent);
 
         });
@@ -69,20 +68,20 @@ public class RecordsActivity extends AppCompatActivity {
 
         //获得Layout里面的TextView 设置标题 显示难度
         TextView titleView = (TextView) findViewById(R.id.title);
-        titleView.setText(getString(R.string.difficultyChoice,PlayerRecord.getDifficultyStr(difficulty)));
+        titleView.setText(getString(R.string.difficultyChoice, PlayerRecord.getDifficultyStr(difficulty)));
 
-        update();
 
         //todo 询问是否加入记录
-        if (GameActivity.online){
+        if (GameActivity.online) {
             onlineAddRecord(score);
-        }else {
+        } else {
+            update();
             addRecordsAfterGame(score);
+            update();
         }
-        update();
 
         //todo 添加长按删除
-        deleteRecords();
+//        deleteRecords();
 
     }
 
@@ -145,7 +144,7 @@ public class RecordsActivity extends AppCompatActivity {
                 map.put("date", record.getRecordTimeStr());
                 data.add(map);
             }
-            System.out.println("正在装在数据"+allRecords);
+            System.out.println("正在装在数据" + allRecords);
         } else {
             System.out.println("空的");
         }
@@ -153,7 +152,7 @@ public class RecordsActivity extends AppCompatActivity {
     }
 
 
-    public void addRecordsAfterGame(int score){
+    public void addRecordsAfterGame(int score) {
         final EditText edt = new EditText(this);
         edt.setMinLines(3);
         new AlertDialog.Builder(this)
@@ -163,7 +162,7 @@ public class RecordsActivity extends AppCompatActivity {
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         String input_name = edt.getText().toString();
-                        PlayerRecord record = new PlayerRecord(difficulty,input_name, score, new Date());
+                        PlayerRecord record = new PlayerRecord(difficulty, input_name, score, new Date());
                         //加入数据
                         recordsDaoDB.doAdd(record);
                         //重新对数据进行排序
@@ -176,15 +175,21 @@ public class RecordsActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void onlineAddRecord(int score){
+    public void onlineAddRecord(int score) {
         String input_name = LoginActivity.user.getName();
-        PlayerRecord record = new PlayerRecord(difficulty,input_name, score, new Date());
+        PlayerRecord record = new PlayerRecord(difficulty, input_name, score, new Date());
         //加入数据
         recordsDaoDB.doAdd(record);
-        //重新对数据进行排序
+//        //重新对数据进行排序
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         data = getData();        //重新获取数据
         //更新排行榜
         update();
+
     }
 
 }

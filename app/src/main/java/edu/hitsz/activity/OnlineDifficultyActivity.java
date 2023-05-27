@@ -135,7 +135,7 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("askMatch", LoginActivity.user.getName());
+            jsonObject.put("askMatch", gameType);
         } catch (JSONException e) {
             e.printStackTrace();
         }

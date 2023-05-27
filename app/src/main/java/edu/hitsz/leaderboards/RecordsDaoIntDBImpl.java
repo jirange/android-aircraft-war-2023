@@ -21,11 +21,15 @@ public class RecordsDaoIntDBImpl implements RecordDao {
     private Handler handler;
     private ClientThread clientThread;
 
-    List<PlayerRecord> records;
-    int diff = GameActivity.difficulty;
+    public static void setRecords(List<PlayerRecord> recordsa) {
+        records = recordsa;
+    }
+
+    static List<PlayerRecord>  records;
+//    int diff = GameActivity.difficulty;
 
     public RecordsDaoIntDBImpl(RecordsActivity recordsActivity) {
-        this.diff = GameActivity.difficulty;
+//        this.diff = GameActivity.difficulty;
         handler = new Handler(getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -34,14 +38,13 @@ public class RecordsDaoIntDBImpl implements RecordDao {
                     System.out.println(msg.obj);
                     records = (List<PlayerRecord>) msg.obj;
                     System.out.println(System.currentTimeMillis());
-                    System.out.println(records);
+                    System.out.println("RecordsDaoIntDBImpl收到了啊"+records);
                 }
             }
         };
 
         clientThread = new ClientThread(handler);  //
         new Thread(clientThread).start();
-        //getAll(diff)
     }
 
 
@@ -72,21 +75,25 @@ public class RecordsDaoIntDBImpl implements RecordDao {
         msg.what = 0x456;
         msg.obj = jsonObject;
         clientThread.toserverHandler.sendMessage(msg);//具体信息
-        getAll(diff);
-
+//        getAll(GameActivity.difficulty);
     }
 
     @Override
     public List<PlayerRecord> getAllRecords(int diff) {
-        this.diff = diff;
-        getAll(diff);
+//        this.diff = diff;
+//        getAll(diff);
 
-        while (true)
-        {
-            if (records != null)
-                break;
-        }
-        System.out.println("我返回的records是："+records);
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        while (true)
+//        {
+//            if (records != null)
+//                break;
+//        }
+        System.out.println("我getAllRecords返回的records是："+records);
         return records;
 
     }
@@ -102,12 +109,15 @@ public class RecordsDaoIntDBImpl implements RecordDao {
         Message msg = new Message();
         msg.what = 0x456;
         msg.obj = jsonObject;
-        while (true){
-            if (clientThread.toserverHandler!=null){
-                break;
+        new Thread(()->{
+            while (true){
+                if (clientThread.toserverHandler!=null){
+                    break;
+                }
             }
-        }
-        clientThread.toserverHandler.sendMessage(msg);//具体信息
+            clientThread.toserverHandler.sendMessage(msg);//具体信息
+        }).start();
+
 
     }
 
@@ -124,7 +134,7 @@ public class RecordsDaoIntDBImpl implements RecordDao {
         msg.what = 0x456;
         msg.obj = jsonObject;
         clientThread.toserverHandler.sendMessage(msg);//具体信息
-        getAll(diff);
+//        getAll(diff);
     }
 
     @Override

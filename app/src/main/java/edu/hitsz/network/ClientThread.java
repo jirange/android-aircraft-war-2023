@@ -20,6 +20,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.hitsz.leaderboards.RecordsDaoIntDBImpl;
 import edu.hitsz.pojo.PlayerRecord;
 import edu.hitsz.pojo.User;
 
@@ -47,7 +48,6 @@ public class ClientThread implements Runnable {
             socket.connect(new InetSocketAddress(HOST, PORT));
             System.out.println("我好了我好无法建瓯市附件");
             //初始化输入输出流
-//            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 //            in = new ObjectInputStream(socket.getInputStream());
             System.out.println("你发的十大");
 
@@ -58,47 +58,25 @@ public class ClientThread implements Runnable {
                 public void run() {
                     String fromserver = null;
                     try {
-                        InputStream is = socket.getInputStream();
-                        in = new ObjectInputStream(is);
+                        in = new ObjectInputStream(socket.getInputStream());
 
                         System.out.println("传回的是" + in);
                         while (in != null) {
                             Message servermsg = new Message();
                             List<PlayerRecord> playerRecordList = null;
-                            List<User> userList = null;
-                            User user;
-                            String userMessage;
                             try {
-//                                playerRecordList = (List<PlayerRecord>) in.readObject();
-
-                                Object o = in.readObject();
-                                System.out.println("klhjlkij" + o);
-
-                                playerRecordList = (List<PlayerRecord>) o;
+                                playerRecordList = (List<PlayerRecord>) in.readObject();
                                 servermsg.what = 0x123;
                                 servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
-
-
-//                                if (((List<?>) o).iterator().hasNext()) {
-//                                    if (((List<?>) o).iterator().next() instanceof PlayerRecord) {
-//                                        System.out.println("传回的是 记录");
-//                                        playerRecordList = (List<PlayerRecord>) o;
-//                                        servermsg.what = 0x123;
-//                                        servermsg.obj = playerRecordList;//服务器返回的东西  操作的返回值
-//                                    } else if (((List<?>) o).iterator().next() instanceof User) {
-//                                        System.out.println("传回的是 用户");
-//                                        userList = (List<User>) o;
-//                                        servermsg.what = 0x113;
-//                                        servermsg.obj = userList;//服务器返回的东西  操作的返回值
-//                                    }
-//
-//                                }
+                                System.out.println("clientThread收到了啊"+playerRecordList);
+                                RecordsDaoIntDBImpl.setRecords(playerRecordList);
+                                toclientHandler.sendMessage(servermsg);//将其返回给操作类
+                                System.out.println("我往 dao中发过去了");
                             } catch (ClassNotFoundException e) {
                                 System.out.println("类找不到了！！！");
                                 e.printStackTrace();
                             }
 
-                            toclientHandler.sendMessage(servermsg);//将其返回给操作类
                         }
 
                     } catch (IOException e) {

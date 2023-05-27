@@ -60,17 +60,23 @@ public class GameActivity extends AppCompatActivity {
                     }
 
                     Toast.makeText(GameActivity.this, "GameOver", Toast.LENGTH_SHORT).show();//原来在下面 地方了
-
-                    //todo 游戏结束 打印排行榜  开启RecordsActivity
-                    Intent recordsIntent;
-//                    if (online){
-//                        recordsIntent = new Intent(GameActivity.this, OnlieRecordsActivity.class);
-//                    }else {
+                    if (!online){
+                        //todo 游戏结束 打印排行榜  开启RecordsActivity
+                        Intent recordsIntent;
                         recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
-//                    }
-                    recordsIntent.putExtra("difficulty", difficulty);
-                    recordsIntent.putExtra("score", (int) msg.obj);
-                    startActivity(recordsIntent);
+                        recordsIntent.putExtra("difficulty", difficulty);
+                        recordsIntent.putExtra("score", (int) msg.obj);
+                        startActivity(recordsIntent);
+                    }else {
+                        //todo 等待对方也死去之后  才能开排行榜
+                        //todo 游戏结束 打印排行榜  开启RecordsActivity
+                        Intent recordsIntent;
+                        recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
+                        recordsIntent.putExtra("difficulty", difficulty);
+                        recordsIntent.putExtra("score", (int) msg.obj);
+                        startActivity(recordsIntent);
+                    }
+
                 }
             }
         };
