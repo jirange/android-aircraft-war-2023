@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -136,6 +137,17 @@ public class MyDbServer {
 
 //                            PlayerRecord record = (PlayerRecord) jsonObject.get("add");
                             MyDB4records.createNewAccount(record);
+
+                            ArrayList<PlayerRecord> allUser2 = MyDB4records.getAllUser(recordJson.getInt("difficulty"));
+                            if (socket.isConnected()) {
+                                try {
+                                    out = new ObjectOutputStream(socket.getOutputStream());
+                                    out.writeObject(allUser2);
+                                    System.out.println("传给客户端 " + allUser2);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             break;
                         case "deleteByName":
                             String deleteName = jsonObject.getString("deleteByName");
@@ -230,21 +242,34 @@ public class MyDbServer {
                         case "askMatch":
                             //todo 请求对战
                             //维护一个匹配清单
-                            String n = jsonObject.getString("askMatch");
+                            String difficulty = jsonObject.getString("askMatch");
 //                            for (User uuser : users) {
 //                                if (uuser.getName().equals(n)) {
 //                                    user=uuser;
 //                                    break;
 //                                }
 //                            }
+                            // TODO: 2023/5/27 每一次请求匹配都将其的原来的匹配对手清空
+                            user.matchUser = null;
+                            user.matchSocket = null;
+                            if (waitMatch.contains(user)) {
+                                waitMatch.remove(user);
+                                System.out.println("重复匹配，要从等待中删除原来的请求");
+                            }
+
+
                             user.socket = socket;
+                            user.difficulty = Integer.valueOf(difficulty);
                             System.out.println("user" + user);
+                            System.out.println("wait的都是谁啊" + waitMatch);
                             for (User waitMatchUser : waitMatch) {
-                                user.matchUser = waitMatchUser;
-                                waitMatchUser.matchUser = user;
-                                user.matchSocket = waitMatchUser.socket;
-                                waitMatchUser.matchSocket = socket;
-                                break;
+                                if (user.difficulty == waitMatchUser.difficulty) {
+                                    user.matchUser = waitMatchUser;
+                                    waitMatchUser.matchUser = user;
+                                    user.matchSocket = waitMatchUser.socket;
+                                    waitMatchUser.matchSocket = socket;
+                                    break;
+                                }
                             }
 
 
@@ -257,16 +282,23 @@ public class MyDbServer {
                                 try {
                                     pout = new PrintWriter(new BufferedWriter(
                                             new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                    pout.println("match_success");  //将输出流包装为打印流
+                                    pout.println("match_success-" + user.matchUser.getName());  //将输出流包装为打印流
                                     pout2 = new PrintWriter(new BufferedWriter(
                                             new OutputStreamWriter(user.matchSocket.getOutputStream(), "UTF-8")), true);
-                                    pout2.println("match_success");  //将输出流包装为打印流
+                                    pout2.println("match_success-" + user.getName());  //将输出流包装为打印流
                                     System.out.println("传给客户端 " + "match_success");
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                // TODO: 2023/5/27 清空score
+                                user.matchScore = 0;
+                                user.score = 0;
+                                user.matchUser.score = 0;
+                                user.matchUser.matchScore = 0;
+
+
                             } else {
-                                waitMatch.add(user);//这句话应该在login里面  ！！！
+                                waitMatch.add(user);
                             }
 
                             //选择对战则需等待对手加入
@@ -288,13 +320,36 @@ public class MyDbServer {
                             //  若匹配成功，
                             if (user.matchSocket != null) {
                                 //  todo 每隔一段时间各个客户端向服务器发送自己的得分，服务器将得分同步给另一个客户端。
-                                user.score = jsonObject.getInt("score");
-                                user.matchScore = user.matchUser.score;
+                                int temp_score = jsonObject.getInt("score");
+                                user.score = temp_score;
+                                if (temp_score < 0) {
+                                    System.out.println("该用户的游戏结束了" + user);
+                                    if (temp_score == -1) {
+                                        temp_score = 0;
+                                    }
+                                    PlayerRecord playerRecord = new PlayerRecord(user.difficulty, user.getName(), -temp_score, new Date());
+                                    MyDB4records.createNewAccount(playerRecord);
+                                    user.matchScore = user.matchUser.score;
+                                    poutsc.println(user.matchScore);  //将输出流包装为打印流
+                                    System.out.println("传给客户端 " + user.matchScore);
+                                    try {
+                                        PrintWriter poutsc2 = new PrintWriter(new BufferedWriter(
+                                                new OutputStreamWriter(user.matchSocket.getOutputStream(), "UTF-8")), true);
+                                        poutsc2.println(user.score);  //将输出流包装为打印流
+                                        System.out.println("传给对方客户端 " + user.score);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    //当我死了之后我得告诉我死了的对手我多少分啊
+                                } else {
+                                    user.matchScore = user.matchUser.score;
 //                                PrintWriter poutsc = null;
 //                                    poutsc = new PrintWriter(new BufferedWriter(
 //                                            new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                poutsc.println(user.matchScore);  //将输出流包装为打印流
-                                System.out.println("传给客户端 " + user.matchScore);
+                                    poutsc.println(user.matchScore);  //将输出流包装为打印流
+                                    System.out.println("传给客户端 " + user.matchScore);
+                                }
+
 
                             }
 

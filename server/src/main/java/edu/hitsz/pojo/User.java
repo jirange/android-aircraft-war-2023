@@ -18,9 +18,10 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", id=" + id +
+//                ", id=" + id +
+                ", difficulty=" + difficulty +
                 ", password='" + password + '\'' +
-//                ", matchUsername=" + matchUser.name +
+//                ", matchUser=" + matchUser +
                 ", socket=" + socket +
                 ", matchSocket=" + matchSocket +
                 ", score=" + score +
@@ -32,16 +33,17 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
     private String name;
-    private int id;
+    //    private int id;
+    public int difficulty;
     private String password;
     public User matchUser;
     public Socket socket;
