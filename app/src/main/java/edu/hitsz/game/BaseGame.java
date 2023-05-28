@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
@@ -118,9 +120,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
     protected int cycleDuration = 600;
     protected int cycleTime = 0;
 
-    //    SoundPool bgmSoundPool;
-    int bgm_id;
-
     public BaseGame(Context context, Handler handler) {
         super(context);
         this.handler = handler;
@@ -155,14 +154,13 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                         System.out.println("matcher score" + msg.obj);
                         if (msg.obj == null) {
                             matchScore = 0;
-                        }
-                        else {
+                        } else {
                             matchScore = Integer.valueOf((String) msg.obj);
-                            if (matchScore < -1){
+                            if (matchScore < -1) {
                                 System.out.println("对方死亡");
                                 matchDead = true;
                                 matchScore = -matchScore;
-                            }else if(matchScore == -1){
+                            } else if (matchScore == -1) {
                                 System.out.println("对方死亡");
                                 matchDead = true;
                                 matchScore = 0;
@@ -183,7 +181,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
      */
     public void action() {
 
-        //new Thread(new Runnable() {
         Runnable task = () -> {
 
             time += timeInterval;
@@ -306,14 +303,10 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
     private void bulletsMoveAction() {
         for (BaseBullet bullet : heroBullets) {
-//            if (bullet != null) {
             bullet.forward();
-//            }
         }
         for (BaseBullet bullet : enemyBullets) {
-//            if (bullet != null) {
             bullet.forward();
-//            }
         }
     }
 
@@ -400,7 +393,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 continue;
             }
             if (heroAircraft.crash(prop)) {
-                //todo 将英雄机加入炸弹观察者清单
+                // 将英雄机加入炸弹观察者清单
                 if (prop instanceof BombProp) {
                     ArrayList<Subscriber> subscribers = new ArrayList<>();
                     subscribers.addAll(enemyBullets);
@@ -413,7 +406,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 }
                 // 英雄碰到道具
                 // 道具生效
-                //todo 道具生效音效
+                // 道具生效音效
                 MySoundPool.playMusic("get_supply");
 
                 System.out.println(prop.getSpeedY());
@@ -443,7 +436,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             if (bossEnemy != null && !bossEnemy.notValid()) {
                 bossEnemy.vanish();
             }
-            //todo 游戏结束音效响起来
+            // 游戏结束音效响起来
             MySoundPool.playMusic("game_over");
 
             gameOverFlag = true;
@@ -522,17 +515,26 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
         mPaint.setColor(Color.RED);
         mPaint.setTextSize(50);
-
+//        if (gameOverFlag) {
+//            mPaint.setColor(Color.GRAY);
+//        }
         canvas.drawText("SCORE:" + this.score, x, y, mPaint);
         y = y + 60;
         canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
         if (GameActivity.online) {
             y = y + 60;
-            if (!matchDead){
+            if (!matchDead) {
                 canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
-            }else {
+            } else {
                 mPaint.setColor(Color.GRAY);
                 canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+            }
+
+            if (gameOverFlag) {
+                mPaint.setTextSize(100);
+                mPaint.setColor(Color.GRAY);
+
+                canvas.drawText("GAME OVER", MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, mPaint);
             }
         }
 
@@ -568,9 +570,9 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
             }
         }).start();
 
-        if (GameActivity.online&& !matchDead) {//对手死后还向对方发送分数吗？  暂且不发送了
+        if (GameActivity.online && !matchDead) {//对手死后还向对方发送分数吗？  暂且不发送了
             new Thread(() -> {
-                while (mbLoop ) {   //游戏结束停止绘制
+                while (mbLoop) {   //游戏结束停止绘制
                     Message msg;
                     msg = new Message();
                     msg.what = 0x111;
@@ -596,14 +598,13 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         }
 
 
-
         Message msg;
         msg = new Message();
         msg.what = 0x111;
-        if (score==0){
+        if (score == 0) {
             msg.obj = -1;
 
-        }else {
+        } else {
             msg.obj = -score;
         }
         while (true) {
@@ -611,18 +612,56 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         }
         clientThread.toserverHandler.sendMessage(msg);//具体信息
 
-        while (!matchDead){
-            synchronized (this) {
-                draw();
-//                System.out.println("gg");
+        while (!matchDead) {
+            synchronized (mSurfaceHolder) {
+                // TODO: 2023/5/28 需要重复绘制吗 可以试一试
+                deadDraw();
+
             }
         }
-        if (matchDead){
+
+        if (matchDead) {
             Message message = Message.obtain();
             message.what = 1;
             message.obj = score;
             handler.sendMessage(message);
         }
+    }
+
+    private void deadDraw() {
+        //将ImageView变成灰色
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        mPaint.setColorFilter(filter);
+
+        canvas = mSurfaceHolder.lockCanvas();
+        if (mSurfaceHolder == null || canvas == null) {
+            return;
+        }
+
+        //绘制背景，图片滚动
+        canvas.drawBitmap(backGround, 0, MainActivity.screenHeight, mPaint);
+        //先绘制子弹，后绘制飞机
+        paintImageWithPositionRevised(enemyBullets); //敌机子弹
+
+        paintImageWithPositionRevised(heroBullets);  //英雄机子弹
+
+
+        paintImageWithPositionRevised(props);//道具
+
+        paintImageWithPositionRevised(enemyAircrafts);//敌机
+
+
+        canvas.drawBitmap(ImageManager.HERO_IMAGE,
+                heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2,
+                heroAircraft.getLocationY() - ImageManager.HERO_IMAGE.getHeight() / 2,
+                mPaint);
+
+        //画生命值
+        paintScoreAndLife();
+
+        mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
 
 }
