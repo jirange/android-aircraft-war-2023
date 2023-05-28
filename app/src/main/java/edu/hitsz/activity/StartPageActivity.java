@@ -24,13 +24,13 @@ public class StartPageActivity extends AppCompatActivity {
 
 
         start_btn.setOnClickListener(view -> {
-//            intent.putExtra("gameType",gameType);
+            //转到模式选择页面
             Intent modelIntent = new Intent(StartPageActivity.this, ModelActivity.class);
             startActivity(modelIntent);
         });
 
         login_btn.setOnClickListener(view -> {
-            //todo 转到登录界面
+            // 转到登录界面
             Intent loginIntent = new Intent(StartPageActivity.this, LoginActivity.class);
             startActivity(loginIntent);
         });

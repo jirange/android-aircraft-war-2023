@@ -107,6 +107,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 //        clientThread = new ClientThread(handler);  //
         UserClientThread.clientThread = new UserClientThread(handler);  //
+        // TODO: 2023/5/28 试试这种？？？
+        //UserClientThread.getClientThread(handler);
 //        new Thread(UserClientThread.clientThread).start();
 
         flag = false;
@@ -124,9 +126,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        new Thread(UserClientThread.clientThread).start();
 
         final View lv = v;
-//        final Map<String, String> paramsmap = new HashMap<>();
-//        paramsmap.put("username", l_name.getText().toString());
-//        paramsmap.put("password", l_pwd.getText().toString());
         JSONObject jsonObject = new JSONObject();
         user = new User(l_name.getText().toString(), l_pwd.getText().toString());
         System.out.println(user);
@@ -141,7 +140,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         new Thread() {
             @Override
             public void run() {
-                String loginresult = "";//存储服务器返回的消息
                 Message msg;
 
                 try {
@@ -149,7 +147,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         case R.id.l_login:
                             //如果点的是登录按钮
                             //todo 发送登录请求 向服务器传递输入的数据
-//                            new Thread(clientThread).start();
                             jsonObject.put("login", userJson);
                             if (!flag) {
                                 new Thread(UserClientThread.clientThread).start();
@@ -157,7 +154,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                             break;
                         case R.id.l_register:
-//                            new Thread(clientThread).start();
                             jsonObject.put("register", userJson);
 
                             //todo 发送注册请求 向服务器传递输入的数据

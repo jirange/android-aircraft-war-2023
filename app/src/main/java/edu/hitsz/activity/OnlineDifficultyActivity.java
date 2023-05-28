@@ -4,12 +4,10 @@ package edu.hitsz.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -17,16 +15,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 import edu.hitsz.R;
-import edu.hitsz.network.ClientThread;
 import edu.hitsz.network.UserClientThread;
-import edu.hitsz.pojo.PlayerRecord;
 
 public class OnlineDifficultyActivity extends AppCompatActivity {
 
@@ -37,7 +30,7 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
     private boolean have_audio = true;
     private Spinner difficultySp;
     private Handler handler;
-    private UserClientThread clientThread;
+//    private UserClientThread clientThread;
     public static boolean have_match;
     private TextView matching_textView;
 
@@ -59,67 +52,37 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 String diff = adapterView.getItemAtPosition(position).toString();
-//                System.out.println(position);//0  1  2
                 gameType = position + 1;
                 System.out.println("联机模式 玩家选择的难度为" + diff);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                //to do  auto
+                //todo  auto
             }
         });
 
 
-        video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    //音效开
-                    System.out.println("音效开");
-                    have_audio = true;
-                } else {
-                    //音效关闭
-                    System.out.println("音效关闭");
-                    have_audio = false;
-                }
+        video_btn.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                //音效开
+                System.out.println("音效开");
+                have_audio = true;
+            } else {
+                //音效关闭
+                System.out.println("音效关闭");
+                have_audio = false;
             }
         });
 
 
         match_btn.setOnClickListener(view -> {
-//            Toast toast = Toast.makeText(OnlineDifficultyActivity.this, "匹配中", Toast.LENGTH_SHORT);
-//            toast.cancel();
-
             //todo 发送匹配请求
             Toast.makeText(OnlineDifficultyActivity.this, "开始匹配...", Toast.LENGTH_SHORT).show();
-//            new Thread(() -> {
-////                Looper.prepare();
             if (!have_match) {
                 matching_textView.setVisibility(View.VISIBLE);
-//                    toast.show();
-                //匹配成功的话
-//                    break;
             }
-//            }).start();
             askMatch();
-
-//            new Thread(() -> {
-//                while (true) {
-//                    if (have_match) {
-//                        Intent gameIntent = new Intent(OnlineDifficultyActivity.this, GameActivity.class);
-//                        gameIntent.putExtra("gameType", gameType);
-//                        gameIntent.putExtra("have_audio", have_audio);
-//                        gameIntent.putExtra("online", true);
-//                        Looper.prepare();
-//                        Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
-//                        //匹配成功的话
-//                        startActivity(gameIntent);
-//                        break;
-//                    }
-//                }
-//            }).start();
-
         });
 
 
@@ -147,8 +110,6 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
                             gameIntent.putExtra("gameType", gameType);
                             gameIntent.putExtra("have_audio", have_audio);
                             gameIntent.putExtra("online", true);
-//                            Looper.prepare();
-//                            Toast.makeText(OnlineDifficultyActivity.this, "匹配成功 进入游戏", Toast.LENGTH_SHORT).show();
                             //匹配成功的话
                             startActivity(gameIntent);
                         }
@@ -157,10 +118,6 @@ public class OnlineDifficultyActivity extends AppCompatActivity {
                 }
             }
         };
-
-//        clientThread = new ClientThread(handler);
-//        new Thread(clientThread).start();
-
     }
 
     private void askMatch() {

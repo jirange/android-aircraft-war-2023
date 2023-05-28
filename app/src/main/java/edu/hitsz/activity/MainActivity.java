@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         getScreenHW();
 
         start_btn.setOnClickListener(view -> {
-//            intent.putExtra("gameType",gameType);
             Intent modelIntent = new Intent(MainActivity.this, ModelActivity.class);
             startActivity(modelIntent);
         });

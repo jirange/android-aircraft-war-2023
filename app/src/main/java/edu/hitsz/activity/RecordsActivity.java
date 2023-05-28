@@ -62,7 +62,6 @@ public class RecordsActivity extends AppCompatActivity {
         return_btn.setOnClickListener(view -> {
             Intent intent = new Intent(RecordsActivity.this, StartPageActivity.class);
             startActivity(intent);
-
         });
 
 
@@ -74,7 +73,6 @@ public class RecordsActivity extends AppCompatActivity {
         if (GameActivity.online) {
             //todo 询问是否加入记录
             onlineAddRecord(score);
-
         } else {
             update();
             //todo 询问是否加入记录
@@ -84,8 +82,6 @@ public class RecordsActivity extends AppCompatActivity {
             //todo 添加长按删除
             deleteRecords();
         }
-
-
     }
 
     public void deleteRecords() {
@@ -133,6 +129,10 @@ public class RecordsActivity extends AppCompatActivity {
 
 
     private ArrayList<HashMap<String, String>> getData() {
+        // TODO: 2023/5/28 试试新加的这段行不行
+        if (GameActivity.online) {
+            recordsDaoDB = new RecordsDaoIntDBImpl(RecordsActivity.this);
+        }
         //装载数据到data
         ArrayList<HashMap<String, String>> data = new ArrayList<>();
         List<PlayerRecord> allRecords = recordsDaoDB.getAllRecords(difficulty);
@@ -190,7 +190,7 @@ public class RecordsActivity extends AppCompatActivity {
         PlayerRecord record = new PlayerRecord(difficulty, input_name, score, new Date());
         //加入数据
         recordsDaoDB.doAdd(record);
-//        //重新对数据进行排序
+        //重新对数据进行排序
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -199,7 +199,6 @@ public class RecordsActivity extends AppCompatActivity {
         data = getData();        //重新获取数据
         //更新排行榜
         update();
-
     }
 
 }

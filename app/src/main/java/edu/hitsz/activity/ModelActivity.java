@@ -19,8 +19,6 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
 
     private Button single_btn;
     private Button online_btn;
-    private Handler handler;
-//    private ClientThread clientThread;
     Intent DifficultyIntent;
     Intent onlineDifficultyIntent;
 
@@ -35,20 +33,6 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
 
         single_btn.setOnClickListener(this);
         online_btn.setOnClickListener(this);
-
-        //用于发送接收到的服务端的消息，显示在界面上
-        handler = new Handler(getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                //如果消息来自于子线程
-                if (msg.what == 0x123) {
-                    //todo 处理来自clientThread的消息
-                    //todo 提示网络连接成功
-                }
-            }
-        };
-
-
     }
 
     @Override
@@ -65,8 +49,6 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.online_btn:  // 进行网络连接
-//                clientThread = new ClientThread(handler);  //
-//                new Thread(clientThread).start();
                 //todo 核验是否登录
                 if (!MainActivity.have_login){
                     //todo 若没有登录 提示前去登录 并跳转
@@ -75,11 +57,6 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                     //todo 转到登录界面
                     Intent loginIntent = new Intent(ModelActivity.this, LoginActivity.class);
                     startActivity(loginIntent);
-//                    try {
-//                        wait();
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
                 }
 
                 new Thread(()->{
@@ -93,18 +70,7 @@ public class ModelActivity extends AppCompatActivity implements View.OnClickList
                         }
                     }
                 }).start();
-
-
                 break;
-
-//                while (true){
-//                    if (MainActivity.have_login) break;
-//                }
-//                //todo 若已经登录成功，进入匹配页面  match
-//                onlineDifficultyIntent = new Intent(ModelActivity.this, OnlineDifficultyActivity.class);
-//                onlineDifficultyIntent.putExtra("model", true);//告诉DifficultyActivity是联网游戏
-//                startActivity(onlineDifficultyIntent);
-//                break;
         }
     }
 

@@ -28,10 +28,6 @@ public class DifficultyActivity extends AppCompatActivity {
         Button hard_btn = findViewById(R.id.hard_btn);
         Switch video_btn = (Switch) findViewById(R.id.video_btn);
 
-//        if (getIntent() != null) {
-//            isOnline = getIntent().getBooleanExtra("model", false);
-//        }
-
 
         Intent intent = new Intent(DifficultyActivity.this, GameActivity.class);
 
@@ -57,26 +53,17 @@ public class DifficultyActivity extends AppCompatActivity {
 
         });
 
-        video_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
-                    //音效开
-                    System.out.println("音效开");
-                    have_audio=true;
-                }else{
-                    //音效关闭
-                    System.out.println("音效关闭");
-                    have_audio=false;
-                }
+        video_btn.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked){
+                //音效开
+                System.out.println("音效开");
+                have_audio=true;
+            }else{
+                //音效关闭
+                System.out.println("音效关闭");
+                have_audio=false;
             }
         });
-//
-//        if (isOnline){
-//
-//        }else{
-//
-//        }
     }
 
     @Override
