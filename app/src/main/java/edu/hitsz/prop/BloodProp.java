@@ -1,5 +1,7 @@
 package edu.hitsz.prop;
 
+import android.util.Log;
+
 import edu.hitsz.aircraft.HeroAircraft;
 
 /**
@@ -22,7 +24,7 @@ public class BloodProp extends BaseProp{
     public void activeProp(HeroAircraft heroAircraft) {
 
         heroAircraft.increaseHp(BloodProp.increase_blood);
-//        System.out.println("BloodSupply active!");
+        Log.i("BloodProp", "BloodSupply active!");
 
     }
 

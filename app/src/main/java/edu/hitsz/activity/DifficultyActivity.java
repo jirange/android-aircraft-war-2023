@@ -1,5 +1,6 @@
 package edu.hitsz.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,7 +27,7 @@ public class DifficultyActivity extends AppCompatActivity {
         Button medium_btn = findViewById(R.id.medium_btn);
         Button easy_btn = findViewById(R.id.easy_btn);
         Button hard_btn = findViewById(R.id.hard_btn);
-        Switch video_btn = (Switch) findViewById(R.id.video_btn);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch video_btn = findViewById(R.id.video_btn);
 
 
         Intent intent = new Intent(DifficultyActivity.this, GameActivity.class);
@@ -56,11 +57,11 @@ public class DifficultyActivity extends AppCompatActivity {
         video_btn.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (isChecked){
                 //音效开
-                System.out.println("音效开");
+                Log.i(TAG,"音效开");
                 have_audio=true;
             }else{
                 //音效关闭
-                System.out.println("音效关闭");
+                Log.i(TAG,"音效关");
                 have_audio=false;
             }
         });

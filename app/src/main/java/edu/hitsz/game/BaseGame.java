@@ -152,17 +152,17 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 public void handleMessage(Message msg) {
                     //如果消息来自于子线程  clientThread  即数据库操作的返回值
                     if (msg.what == 0x103) {
-                        System.out.println("matcher score" + msg.obj);
+                        Log.i(TAG,"opponent score" + msg.obj);
                         if (msg.obj == null) {
                             matchScore = 0;
                         } else {
-                            matchScore = Integer.valueOf((String) msg.obj);
+                            matchScore = Integer.parseInt((String) msg.obj);
                             if (matchScore < -1) {
-                                System.out.println("对方死亡");
+                                Log.i(TAG,"opponent dead");
                                 matchDead = true;
                                 matchScore = -matchScore;
                             } else if (matchScore == -1) {
-                                System.out.println("对方死亡");
+                                Log.i(TAG,"opponent dead");
                                 matchDead = true;
                                 matchScore = 0;
                             }
@@ -284,7 +284,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                     factory = new BossEnemyFactory();
                     bossEnemy = factory.createEnemy(5, bossHp);
                     bossHp += bossHpAdd;
-                    System.out.println("boss敌机血量为" + bossEnemy.getHp());
+                    Log.i(TAG,"boss敌机血量为" + bossEnemy.getHp());
                     //设置为散射弹道
                     bossEnemy.setShootStrategy(new ScatteringShoot());
                     enemyAircrafts.add(bossEnemy);
@@ -409,8 +409,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 // 道具生效
                 // 道具生效音效
                 MySoundPool.playMusic("get_supply");
-
-                System.out.println(prop.getSpeedY());
                 prop.activeProp(heroAircraft);
                 prop.vanish();
             }

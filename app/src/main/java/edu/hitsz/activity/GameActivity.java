@@ -45,28 +45,19 @@ public class GameActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 Log.d(TAG, "handleMessage");
                 if (msg.what == 1) {
-                    //todo 关闭音乐bgm
+                    // 关闭音乐bgm
                     if (haveAudio) {
                         stopService(musicIntent);
                     }
 
                     Toast.makeText(GameActivity.this, "GameOver", Toast.LENGTH_SHORT).show();//原来在下面 地方了
-                    if (!online){
-                        //todo 游戏结束 打印排行榜  开启RecordsActivity
-                        Intent recordsIntent;
-                        recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
-                        recordsIntent.putExtra("difficulty", difficulty);
-                        recordsIntent.putExtra("score", (int) msg.obj);
-                        startActivity(recordsIntent);
-                    }else {
-                        //todo 等待对方也死去之后  才能开排行榜
-                        //todo 游戏结束 打印排行榜  开启RecordsActivity
-                        Intent recordsIntent;
-                        recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
-                        recordsIntent.putExtra("difficulty", difficulty);
-                        recordsIntent.putExtra("score", (int) msg.obj);
-                        startActivity(recordsIntent);
-                    }
+                    // 游戏结束 打印排行榜  开启RecordsActivity
+                    Intent recordsIntent;
+                    recordsIntent = new Intent(GameActivity.this, RecordsActivity.class);
+                    recordsIntent.putExtra("difficulty", difficulty);
+                    recordsIntent.putExtra("score", (int) msg.obj);
+                    startActivity(recordsIntent);
+
 
                 }
             }
@@ -74,7 +65,7 @@ public class GameActivity extends AppCompatActivity {
         if (getIntent() != null) {
             gameType = getIntent().getIntExtra("gameType", 1);
             haveAudio = getIntent().getBooleanExtra("have_audio", false);
-            online = getIntent().getBooleanExtra("online",false);
+            online = getIntent().getBooleanExtra("online", false);
         }
         BaseGame basGameView;
 
@@ -94,9 +85,7 @@ public class GameActivity extends AppCompatActivity {
         if (haveAudio) {
             musicIntent = new Intent(this, MusicService.class);
             musicIntent.putExtra("action", "play");
-            System.out.println("我执行了吗"+haveAudio);
             startService(musicIntent);
-
             MySoundPool.initialSoundPoolMap(this);
             MySoundPool.haveAudio = true;
         } else {

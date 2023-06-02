@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 
 import org.json.JSONException;
@@ -19,6 +20,7 @@ import edu.hitsz.pojo.PlayerRecord;
 
 public class RecordsDaoIntDBImpl implements RecordDao {
     private Handler handler;
+    private String TAG="RecordsDaoIntDBImpl";
     private ClientThread clientThread;
 
     public static void setRecords(List<PlayerRecord> recordsa) {
@@ -35,10 +37,8 @@ public class RecordsDaoIntDBImpl implements RecordDao {
             public void handleMessage(Message msg) {
                 //如果消息来自于子线程  clientThread  即数据库操作的返回值
                 if (msg.what == 0x123) {
-                    System.out.println(msg.obj);
                     records = (List<PlayerRecord>) msg.obj;
-                    System.out.println(System.currentTimeMillis());
-                    System.out.println("RecordsDaoIntDBImpl收到了啊"+records);
+                    Log.i(TAG,"get records: "+records);
                 }
             }
         };
@@ -80,22 +80,9 @@ public class RecordsDaoIntDBImpl implements RecordDao {
 
     @Override
     public List<PlayerRecord> getAllRecords(int diff) {
-//        this.diff = diff;
-//        getAll(diff);
-
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        while (true)
-//        {
-//            if (records != null)
-//                break;
-//        }
-        System.out.println("我getAllRecords返回的records是："+records);
+        getAll(diff);
+        Log.i(TAG,"getAllRecords return records"+records);
         return records;
-
     }
 
     private void getAll(int diff) {

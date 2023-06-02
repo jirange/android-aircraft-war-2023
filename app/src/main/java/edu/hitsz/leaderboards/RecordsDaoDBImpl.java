@@ -1,6 +1,8 @@
 package edu.hitsz.leaderboards;
 
 import android.content.Context;
+import android.nfc.Tag;
+import android.util.Log;
 
 
 import java.util.List;
@@ -9,6 +11,7 @@ import edu.hitsz.pojo.PlayerRecord;
 
 public class RecordsDaoDBImpl implements RecordDao{
     private RecordsDBHelper mHelper;
+    private String TAG = "RecordsActivity";
     public RecordsDaoDBImpl(Context context){
         mHelper=RecordsDBHelper.getInstance(context,2);
     }
@@ -17,7 +20,7 @@ public class RecordsDaoDBImpl implements RecordDao{
     public void doAdd(PlayerRecord record) {
         mHelper.openWriteLink();
         long insert = mHelper.insert(record);
-        System.out.println("add insert "+insert);
+        Log.i(TAG,"add insert "+insert);
         mHelper.closeLink();
     }
 
@@ -36,7 +39,7 @@ public class RecordsDaoDBImpl implements RecordDao{
         String whereClause="r_playerName=?";
         String[] whereArgs={playerName};
         int delete = mHelper.delete(whereClause, whereArgs);
-        System.out.println("delete"+delete+"条");
+        Log.i(TAG,"delete"+delete+"条");
         mHelper.closeLink();
 
     }
@@ -47,7 +50,7 @@ public class RecordsDaoDBImpl implements RecordDao{
         String whereClause="r_ranking=?";
         String[] whereArgs={String.valueOf(ranking)};
         int delete = mHelper.delete(whereClause, whereArgs);
-        System.out.println("delete"+delete+"条");
+        Log.i(TAG,"delete"+delete+"条");
         mHelper.closeLink();
     }
 

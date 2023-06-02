@@ -18,6 +18,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.Buffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -74,9 +75,9 @@ public class MyDbServer {
             try {
                 //3.接收请求后创建链接socket
                 //4.通过InputStream  outputStream进行通信
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 poutsc = new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                        new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)), true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -168,16 +169,15 @@ public class MyDbServer {
                             ArrayList<User> query = MyDB4login.query(condition);
                             System.out.println(query);
                             String noticeStr;
-                            if (query == null || query.size() == 0) {
+                            if ( query.size() == 0) {
                                 noticeStr = "login_failed";
                             } else {
                                 noticeStr = "login_success";
                             }
                             if (socket.isConnected()) {
                                 try {
-                                    PrintWriter pout = null;
-                                    pout = new PrintWriter(new BufferedWriter(
-                                            new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                                    PrintWriter pout = new PrintWriter(new BufferedWriter(
+                                            new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)), true);
                                     pout.println(noticeStr);  //将输出流包装为打印流
 
                                     System.out.println("传给客户端 " + noticeStr);
@@ -198,7 +198,7 @@ public class MyDbServer {
                             String condition_register = String.format(" NAME = '%s' ", user_register.getName());
                             ArrayList<User> query_user_register = MyDB4login.query(condition_register);
 
-                            if (query_user_register == null || query_user_register.size() == 0) {
+                            if (query_user_register.size() == 0) {
                                 //todo 开始正常注册流程
                                 MyDB4login.createNewAccount(user_register);
                                 registerStr = "register_success";
@@ -208,9 +208,8 @@ public class MyDbServer {
                             }
                             if (socket.isConnected()) {
                                 try {
-                                    PrintWriter pout = null;
-                                    pout = new PrintWriter(new BufferedWriter(
-                                            new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                                    PrintWriter pout = new PrintWriter(new BufferedWriter(
+                                            new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)), true);
                                     pout.println(registerStr);  //将输出流包装为打印流
 
                                     System.out.println("传给客户端 " + registerStr);
@@ -235,9 +234,9 @@ public class MyDbServer {
 
 
                             user.socket = socket;
-                            user.difficulty = Integer.valueOf(difficulty);
+                            user.difficulty = Integer.parseInt(difficulty);
                             System.out.println("user" + user);
-                            System.out.println("wait的都是谁啊" + waitMatch);
+                            System.out.println("waitMatch " + waitMatch);
                             for (User waitMatchUser : waitMatch) {
                                 if (user.difficulty == waitMatchUser.difficulty) {
                                     user.matchUser = waitMatchUser;
@@ -249,18 +248,18 @@ public class MyDbServer {
                             }
 
 
-                            System.out.println("匹配jie guo" + user + user.matchUser);
+                            System.out.println("匹配结果" + user + user.matchUser);
                             if (user.matchUser != null) {
                                 waitMatch.remove(user.matchUser);
                                 // 向客户端发送信号 表示匹配成功
-                                PrintWriter pout = null;
-                                PrintWriter pout2 = null;
+                                PrintWriter pout;
+                                PrintWriter pout2;
                                 try {
                                     pout = new PrintWriter(new BufferedWriter(
-                                            new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                                            new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)), true);
                                     pout.println("match_success-" + user.matchUser.getName());  //将输出流包装为打印流
                                     pout2 = new PrintWriter(new BufferedWriter(
-                                            new OutputStreamWriter(user.matchSocket.getOutputStream(), "UTF-8")), true);
+                                            new OutputStreamWriter(user.matchSocket.getOutputStream(), StandardCharsets.UTF_8)), true);
                                     pout2.println("match_success-" + user.getName());  //将输出流包装为打印流
                                     System.out.println("传给客户端 " + "match_success");
                                 } catch (IOException e) {
@@ -298,7 +297,7 @@ public class MyDbServer {
                                     System.out.println("传给客户端 " + user.matchScore);
                                     try {
                                         PrintWriter poutsc2 = new PrintWriter(new BufferedWriter(
-                                                new OutputStreamWriter(user.matchSocket.getOutputStream(), "UTF-8")), true);
+                                                new OutputStreamWriter(user.matchSocket.getOutputStream(), StandardCharsets.UTF_8)), true);
                                         poutsc2.println(user.score);  //将输出流包装为打印流
                                         System.out.println("传给对方客户端 " + user.score);
                                     } catch (IOException e) {

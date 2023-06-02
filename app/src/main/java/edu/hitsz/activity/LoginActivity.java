@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,10 +34,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText l_pwd;
     private EditText l_host;
     private Button l_login, l_register;
-    //    private String LOGIN_URL = "http://192.168.101.10:9090/Login_Server/login";
     private static final String TAG = "LoginActivity";
     private Handler handler;
-    //    private ClientThread clientThread;
     private UserClientThread clientThread;
     public static User user;
     private boolean flag;
@@ -62,41 +61,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void handleMessage(Message msg) {
                 //如果消息来自于子线程  clientThread  即数据库操作的返回值
                 if (msg.what == 0x113) {
-                    System.out.println(msg.obj);
-                    Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
                     switch (msg.obj.toString()) {
                         case "login_success":
-                            //todo 登录成功
-                            System.out.println("登录成功");
+                            // 登录成功
+                            Log.i(TAG,"login_success");
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-
-                            //todo 设置为已经登录
+                            // 设置为已经登录
                             MainActivity.have_login = true;
-                            //todo 返回主界面
+                            // 返回主界面
                             finish();
                             break;
                         case "login_failed":
-                            //todo 登录失败  账号或密码错误
-                            System.out.println("登录失败  账号或密码错误");
+                            // 登录失败  账号或密码错误
+                            Log.i(TAG,"login_failed");
                             Toast.makeText(LoginActivity.this, "登录失败 账号或密码错误", Toast.LENGTH_SHORT).show();
-
                             break;
                         case "register_success":
-                            //todo 注册成功
-                            System.out.println("注册成功");
+                            // 注册成功
+                            Log.i(TAG,"register_success");
                             Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-
-//                            //todo 设置为已经登录
-//                            MainActivity.have_login=true;
-//                            //todo 返回主界面
-//                            finish();
-
                             break;
                         case "register_failed":
-                            //todo 注册失败 有重复的用户名
-                            System.out.println("注册失败 有重复的用户名");
+                            // 注册失败 有重复的用户名
+                            Log.i(TAG,"register_failed");
                             Toast.makeText(LoginActivity.this, "注册失败 有重复的用户名", Toast.LENGTH_SHORT).show();
-
                             break;
                     }
                 }
@@ -105,12 +93,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         };
 
-//        clientThread = new ClientThread(handler);  //
-        UserClientThread.clientThread = new UserClientThread(handler);  //
-        // TODO: 2023/5/28 试试这种？？？
-        //UserClientThread.getClientThread(handler);
-//        new Thread(UserClientThread.clientThread).start();
-
+        UserClientThread.clientThread = new UserClientThread(handler);
         flag = false;
     }
 
@@ -119,16 +102,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         UserClientThread.HOST = l_host.getText().toString();
         ClientThread.HOST = l_host.getText().toString();
-
-//        clientThread = UserClientThread.getClientThread(handler);
-//        clientThread = UserClientThread.getClientThread(handler);
-//        UserClientThread.clientThread = new UserClientThread(handler);  //
-//        new Thread(UserClientThread.clientThread).start();
-
         final View lv = v;
         JSONObject jsonObject = new JSONObject();
         user = new User(l_name.getText().toString(), l_pwd.getText().toString());
-        System.out.println(user);
         JSONObject userJson = new JSONObject();
         try {
             userJson.put("name", l_name.getText().toString());
@@ -137,43 +113,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
         }
 
-        new Thread() {
-            @Override
-            public void run() {
-                Message msg;
+        new Thread(() -> {
+            Message msg;
 
-                try {
-                    switch (lv.getId()) {
-                        case R.id.l_login:
-                            //如果点的是登录按钮
-                            //todo 发送登录请求 向服务器传递输入的数据
-                            jsonObject.put("login", userJson);
-                            if (!flag) {
-                                new Thread(UserClientThread.clientThread).start();
-                            }
-
-                            break;
-                        case R.id.l_register:
-                            jsonObject.put("register", userJson);
-
-                            //todo 发送注册请求 向服务器传递输入的数据
+            try {
+                switch (lv.getId()) {
+                    case R.id.l_login:
+                        // 发送登录请求 向服务器传递输入的数据
+                        jsonObject.put("login", userJson);
+                        if (!flag) {
                             new Thread(UserClientThread.clientThread).start();
-                            flag = true;
-                            break;
-                    }
-                    msg = new Message();
-                    msg.what = 0x456;
-                    msg.obj = jsonObject;
-                    System.out.println("向数据库发送" + jsonObject.toString());
-                    while (true) {
-                        if (UserClientThread.clientThread.toserverHandler != null) break;
-                    }
-                    UserClientThread.clientThread.toserverHandler.sendMessage(msg);//具体信息
-                } catch (Exception e) {
-                    e.printStackTrace();
+                        }
+
+                        break;
+                    case R.id.l_register:
+                        // 发送注册请求 向服务器传递输入的数据
+                        jsonObject.put("register", userJson);
+                        new Thread(UserClientThread.clientThread).start();
+                        flag = true;
+                        break;
                 }
+                msg = new Message();
+                msg.what = 0x456;
+                msg.obj = jsonObject;
+                Log.i(TAG,"向数据库发送" + jsonObject.toString());
+                while (true) {
+                    if (UserClientThread.clientThread.toserverHandler != null) break;
+                }
+                UserClientThread.clientThread.toserverHandler.sendMessage(msg);//具体信息
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }.start();
+        }).start();
     }
 
 

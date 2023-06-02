@@ -2,7 +2,9 @@ package edu.hitsz.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,7 +55,7 @@ public class RecordsActivity extends AppCompatActivity {
 
         data = getData();
 
-        //todo 游戏结束 打印排行榜
+        // 游戏结束 打印排行榜
         setContentView(R.layout.activity_leaderboards);
 
         //设置返回主界面键
@@ -66,55 +68,49 @@ public class RecordsActivity extends AppCompatActivity {
 
 
         //获得Layout里面的TextView 设置标题 显示难度
-        TextView titleView = (TextView) findViewById(R.id.title);
+        TextView titleView = findViewById(R.id.title);
         titleView.setText(getString(R.string.difficultyChoice, PlayerRecord.getDifficultyStr(difficulty)));
 
 
         if (GameActivity.online) {
-            //todo 询问是否加入记录
+            // 询问是否加入记录
             onlineAddRecord(score);
         } else {
             update();
-            //todo 询问是否加入记录
+            // 询问是否加入记录
             addRecordsAfterGame(score);
             update();
 
-            //todo 添加长按删除
+            // 添加长按删除
             deleteRecords();
         }
     }
 
     public void deleteRecords() {
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(RecordsActivity.this);
-                builder.setMessage("确定删除？");
-                builder.setTitle("提示？");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //删除数据
-                        String deleteName = data.get(position).get("name");
-                        data.remove(position);
-                        //重新对数据进行排序
-                        recordsDaoDB.doDeleteByName(deleteName);
-                        data = getData();        //重新获取数据
-                        //更新排行榜
-                        listItemAdapter.notifyDataSetChanged();
-                        update();
-                    }
-                });
-                builder.setNegativeButton("No", null);
-                builder.create().show();
-                return false;
-            }
+        list.setOnItemLongClickListener((parent, view, position, id) -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(RecordsActivity.this);
+            builder.setMessage("确定删除？");
+            builder.setTitle("提示？");
+            builder.setPositiveButton("Yes", (dialogInterface, i) -> {
+                //删除数据
+                String deleteName = data.get(position).get("name");
+                data.remove(position);
+                //重新对数据进行排序
+                recordsDaoDB.doDeleteByName(deleteName);
+                data = getData();        //重新获取数据
+                //更新排行榜
+                listItemAdapter.notifyDataSetChanged();
+                update();
+            });
+            builder.setNegativeButton("No", null);
+            builder.create().show();
+            return false;
         });
     }
 
     public void update() {
         //获得Layout里面的ListView
-        list = (ListView) findViewById(R.id.leaderboards_list);
+        list = findViewById(R.id.leaderboards_list);
         //生成适配器的Item和动态数组对应的元素
         listItemAdapter = new SimpleAdapter(
                 RecordsActivity.this,
@@ -129,7 +125,6 @@ public class RecordsActivity extends AppCompatActivity {
 
 
     private ArrayList<HashMap<String, String>> getData() {
-        // TODO: 2023/5/28 试试新加的这段行不行
         if (GameActivity.online) {
             recordsDaoDB = new RecordsDaoIntDBImpl(RecordsActivity.this);
         }
@@ -154,9 +149,9 @@ public class RecordsActivity extends AppCompatActivity {
                 map.put("date", record.getRecordTimeStr());
                 data.add(map);
             }
-            System.out.println("正在装在数据" + allRecords);
+            Log.i(TAG,"uploading data:"+ allRecords);
         } else {
-            System.out.println("空的");
+            Log.i(TAG," no data can upload");
         }
         return data;
     }
@@ -169,17 +164,15 @@ public class RecordsActivity extends AppCompatActivity {
                 .setTitle("请输入你的姓名 不可重复")
                 .setMessage("确定将此条游戏记录加入排行榜？")
                 .setView(edt)
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        String input_name = edt.getText().toString();
-                        PlayerRecord record = new PlayerRecord(difficulty, input_name, score, new Date());
-                        //加入数据
-                        recordsDaoDB.doAdd(record);
-                        //重新对数据进行排序
-                        data = getData();        //重新获取数据
-                        //更新排行榜
-                        update();
-                    }
+                .setPositiveButton("YES", (arg0, arg1) -> {
+                    String input_name = edt.getText().toString();
+                    PlayerRecord record = new PlayerRecord(difficulty, input_name, score, new Date());
+                    //加入数据
+                    recordsDaoDB.doAdd(record);
+                    //重新对数据进行排序
+                    data = getData();        //重新获取数据
+                    //更新排行榜
+                    update();
                 })
                 .setNegativeButton("NO", null)
                 .show();

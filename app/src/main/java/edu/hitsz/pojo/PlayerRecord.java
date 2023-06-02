@@ -1,6 +1,9 @@
 package edu.hitsz.pojo;
 
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -151,7 +154,7 @@ public class PlayerRecord implements Serializable {
      * @return recordTime  string
      */
     public String getRecordTimeStr() {
-        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
         return format.format(recordTime);
     }
     /**
@@ -163,11 +166,11 @@ public class PlayerRecord implements Serializable {
 
 
     public void setRecordTime(String recordTime) {
-        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
         try {
             this.recordTime = format.parse(recordTime);
         } catch (ParseException e) {
-            System.out.println("字符串解析出现错误！！！");
+            Log.i("PlayerRecord","字符串解析出现错误！！！");
             e.printStackTrace();
         }
     }

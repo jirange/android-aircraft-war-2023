@@ -1,5 +1,7 @@
 package edu.hitsz.prop;
 
+import android.util.Log;
+
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.strategy.shoot.DirectShoot;
 import edu.hitsz.strategy.shoot.ScatteringShoot;
@@ -18,7 +20,7 @@ public class BulletProp extends BaseProp {
 
     @Override
     public void activeProp(HeroAircraft heroAircraft) {
-        System.out.println("FireSupply active!");
+        Log.i("BulletProp","FireSupply active!");
 //让直射线程暂停五秒 散射线程持续五秒后关闭
         Runnable scatteringRun = () -> {
             synchronized (BulletProp.class) {
@@ -33,7 +35,7 @@ public class BulletProp extends BaseProp {
         };
         //开启散射线程
         new Thread(scatteringRun).start();
-        System.out.println("FireSupply end!");
+        Log.i("BulletProp","FireSupply end!");
 
     }
 

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         login_btn.setOnClickListener(view -> {
-            //todo 转到登录界面
+            // 转到登录界面
             Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(loginIntent);
         });
