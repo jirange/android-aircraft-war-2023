@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -502,6 +503,7 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 AbstractFlyingObject object = objects.get(i);
                 Bitmap image = object.getImage();
                 assert image != null : objects.getClass().getName() + " has no image! ";
+
                 canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
                         object.getLocationY() - image.getHeight() / 2, mPaint);
             }
@@ -524,17 +526,17 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         if (GameActivity.online) {
             y = y + 60;
             if (!matchDead) {
-                canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+                canvas.drawText("OPPONENT SCORE:" + this.matchScore, x, y, mPaint);
             } else {
                 mPaint.setColor(Color.GRAY);
-                canvas.drawText("Matcher SCORE:" + this.matchScore, x, y, mPaint);
+                canvas.drawText("OPPONENT SCORE:" + this.matchScore, x, y, mPaint);
             }
 
             if (gameOverFlag) {
                 mPaint.setTextSize(100);
                 mPaint.setColor(Color.GRAY);
 
-                canvas.drawText("GAME OVER", MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, mPaint);
+                canvas.drawText("GAME OVER", MainActivity.screenWidth / 2-100, MainActivity.screenHeight / 2, mPaint);
             }
         }
 
@@ -559,73 +561,103 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public void run() {
-        new Thread(() -> {
-            while (mbLoop) {   //游戏结束停止绘制
-                action();
-                try {
-                    Thread.sleep(timeInterval);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        if (GameActivity.online && !matchDead) {//对手死后还向对方发送分数吗？  暂且不发送了
+        if (!GameActivity.online){
+            //单机模式下只需要action和draw 以及通知结束传分数
             new Thread(() -> {
                 while (mbLoop) {   //游戏结束停止绘制
-                    Message msg;
-                    msg = new Message();
-                    msg.what = 0x111;
-                    msg.obj = score;
-                    while (true) {
-                        if (clientThread.toserverHandler != null) break;
-                    }
-                    clientThread.toserverHandler.sendMessage(msg);//具体信息
-
+                    action();
                     try {
-                        Thread.sleep(400);
+                        Thread.sleep(timeInterval);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
-        }
-
-        while (mbLoop) {   //游戏结束停止绘制
-            synchronized (mSurfaceHolder) {
-                draw();
+            while (mbLoop) {   //游戏结束停止绘制
+                synchronized (mSurfaceHolder) {
+                    draw();
+                }
             }
-        }
-
-
-        Message msg;
-        msg = new Message();
-        msg.what = 0x111;
-        if (score == 0) {
-            msg.obj = -1;
-
-        } else {
-            msg.obj = -score;
-        }
-        while (true) {
-            if (clientThread.toserverHandler != null) break;
-        }
-        clientThread.toserverHandler.sendMessage(msg);//具体信息
-
-        while (!matchDead) {
-            synchronized (mSurfaceHolder) {
-                // TODO: 2023/5/28 需要重复绘制吗 可以试一试
-                deadDraw();
-
-            }
-        }
-
-        if (matchDead) {
             Message message = Message.obtain();
             message.what = 1;
             message.obj = score;
             handler.sendMessage(message);
+
+        }else {
+            new Thread(() -> {
+                while (mbLoop) {   //游戏结束停止绘制
+                    action();
+                    try {
+                        Thread.sleep(timeInterval);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+            if (!matchDead) {
+                new Thread(() -> {
+                    while (mbLoop) {   //游戏结束停止绘制
+                        Message msg;
+                        msg = new Message();
+                        msg.what = 0x111;
+                        msg.obj = score;
+                        while (true) {
+                            if (clientThread.toserverHandler != null) break;
+                        }
+                        clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+                        try {
+                            Thread.sleep(400);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+
+            while (mbLoop) {   //游戏结束停止绘制
+                synchronized (mSurfaceHolder) {
+                    draw();
+                }
+            }
+
+
+            Message msg;
+            msg = new Message();
+            msg.what = 0x111;
+            if (score == 0) {
+                msg.obj = -1;
+
+            } else {
+                msg.obj = -score;
+            }
+
+            while (true) {
+                if (clientThread.toserverHandler != null) break;
+            }
+            clientThread.toserverHandler.sendMessage(msg);//具体信息
+
+            if (!matchDead) {
+                synchronized (mSurfaceHolder) {
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    deadDraw();
+
+                }
+            }
+
+            while (true) {
+                if (matchDead){
+                    Message message = Message.obtain();
+                    message.what = 1;
+                    message.obj = score;
+                    handler.sendMessage(message);
+                    break;
+                }
+            }
+
         }
+
     }
 
     private void deadDraw() {
@@ -636,11 +668,14 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
         mPaint.setColorFilter(filter);
 
         canvas = mSurfaceHolder.lockCanvas();
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
         if (mSurfaceHolder == null || canvas == null) {
             return;
         }
+        mPaint.setColorFilter(filter);
 
-        //绘制背景，图片滚动
+        //绘制背景
         canvas.drawBitmap(backGround, 0, MainActivity.screenHeight, mPaint);
         //先绘制子弹，后绘制飞机
         paintImageWithPositionRevised(enemyBullets); //敌机子弹
@@ -649,9 +684,21 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
 
         paintImageWithPositionRevised(props);//道具
+        mPaint.setColorFilter(filter);
 
-        paintImageWithPositionRevised(enemyAircrafts);//敌机
+        if (enemyAircrafts != null && enemyAircrafts.size() == 0) {
+            return;
+        } else {
+            for (int i = 0; i < enemyAircrafts.size(); i++) {
+                AbstractFlyingObject object = enemyAircrafts.get(i);
+                Bitmap image = object.getImage();
+                assert image != null : enemyAircrafts.getClass().getName() + " has no image! ";
 
+                canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
+                        object.getLocationY() - image.getHeight() / 2, mPaint);
+            }
+        }
+        mPaint.setColorFilter(filter);
 
         canvas.drawBitmap(ImageManager.HERO_IMAGE,
                 heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2,
