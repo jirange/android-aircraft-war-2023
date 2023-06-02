@@ -17,10 +17,6 @@ public class MyDB4login {
 //        createNewAccount("nmy","123456");
 //        getAllUser();
 
-//        String condition = "  NAME = '" + "nmy" +"' AND " +" PASSWORD = '" + "123456"+"'";
-//        ArrayList<User> query = MyDB4login.query(condition);
-//        System.out.println(query);
-
     }
     private static final String DB_NAME = "customer_serve.db";
     private static final String url="jdbc:sqlite:"+DB_NAME;

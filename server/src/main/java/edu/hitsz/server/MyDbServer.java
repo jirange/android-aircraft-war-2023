@@ -28,9 +28,7 @@ public class MyDbServer {
     public static final int PORT = 8899;//端口号
     private ServerSocket server = null;
     ObjectOutputStream out = null;
-    List<User> users = new ArrayList<>();
     List<User> waitMatch = new ArrayList<>();
-    List<User> matchers = new ArrayList<>();
 
 
     public static void main(String[] args) {
@@ -49,10 +47,6 @@ public class MyDbServer {
             System.out.println("--服务器开启中--");
 
             while (true) {
-                //一下就是服务器与数据库连接的方式
-                //这是登录名和密码的登录逻辑
-                //还要添加排行榜数据
-
                 //2.等待接收请求   这里接收客户端的请求
                 Socket client = server.accept();
                 System.out.println("得到客户端连接：" + client);
@@ -96,10 +90,7 @@ public class MyDbServer {
                 while ((content = in.readLine()) != null) {
                     System.out.println("从客户端接收到的消息为：" + content);
                     parseJson(content);
-//                    out.close();
                 }
-//                socket.close();
-                //in.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -132,10 +123,8 @@ public class MyDbServer {
                                     recordJson.getInt("ranking"),
                                     recordJson.getString("playerName"),
                                     recordJson.getInt("score"),
-                                    recordJson.getString("recordTime"));
+                                    new Date());
 
-
-//                            PlayerRecord record = (PlayerRecord) jsonObject.get("add");
                             MyDB4records.createNewAccount(record);
 
                             ArrayList<PlayerRecord> allUser2 = MyDB4records.getAllUser(recordJson.getInt("difficulty"));
@@ -175,19 +164,15 @@ public class MyDbServer {
                             user.setName(name);
                             user.setPassword(password);
                             System.out.println("数据库收到了 user" + user);
-                            users.add(user);
-                            //todo user.socket = socket;
                             String condition = String.format(" NAME = '%s' AND  PASSWORD = '%s'", user.getName(), user.getPassword());
                             ArrayList<User> query = MyDB4login.query(condition);
                             System.out.println(query);
                             String noticeStr;
                             if (query == null || query.size() == 0) {
                                 noticeStr = "login_failed";
-                                //todo 提示用户名和密码错误
                             } else {
                                 noticeStr = "login_success";
                             }
-//todo 可不可以这样呢  不用序列化了  用个新流，比如正常的字符输入输出流
                             if (socket.isConnected()) {
                                 try {
                                     PrintWriter pout = null;
@@ -215,13 +200,9 @@ public class MyDbServer {
 
                             if (query_user_register == null || query_user_register.size() == 0) {
                                 //todo 开始正常注册流程
-                                System.out.println("查无此人");
                                 MyDB4login.createNewAccount(user_register);
                                 registerStr = "register_success";
-                                users.add(user_register);
                             } else {
-                                System.out.println("查有此人");
-
                                 //todo 之前注册过 应该提示用户名已存在 请换一个
                                 registerStr = "register_failed";
                             }
@@ -243,16 +224,11 @@ public class MyDbServer {
                             //todo 请求对战
                             //维护一个匹配清单
                             String difficulty = jsonObject.getString("askMatch");
-//                            for (User uuser : users) {
-//                                if (uuser.getName().equals(n)) {
-//                                    user=uuser;
-//                                    break;
-//                                }
-//                            }
-                            // TODO: 2023/5/27 每一次请求匹配都将其的原来的匹配对手清空
+
+                            // 每一次请求匹配都将其的原来的匹配对手清空
                             user.matchUser = null;
                             user.matchSocket = null;
-                            if (waitMatch.contains(user)) {
+                            if (waitMatch!=null&&waitMatch.contains(user)) {
                                 waitMatch.remove(user);
                                 System.out.println("重复匹配，要从等待中删除原来的请求");
                             }
@@ -276,7 +252,7 @@ public class MyDbServer {
                             System.out.println("匹配jie guo" + user + user.matchUser);
                             if (user.matchUser != null) {
                                 waitMatch.remove(user.matchUser);
-                                // TODO: 2023/5/23 向客户端发送信号 表示匹配成功
+                                // 向客户端发送信号 表示匹配成功
                                 PrintWriter pout = null;
                                 PrintWriter pout2 = null;
                                 try {
@@ -290,7 +266,7 @@ public class MyDbServer {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                // TODO: 2023/5/27 清空score
+                                // 清空score
                                 user.matchScore = 0;
                                 user.score = 0;
                                 user.matchUser.score = 0;
@@ -301,25 +277,13 @@ public class MyDbServer {
                                 waitMatch.add(user);
                             }
 
-                            //选择对战则需等待对手加入
-                            //• 实现联网对战同步对手得分
-                            //• 得分排行榜界面实现（联网）
-
-
-                            //两个客户端和服务器建立连接
-                            //后，若匹配成功，每隔一段时
-                            //间各个客户端向服务器发送自
-                            //己的得分，服务器将得分同步
-                            //给另一个客户端。
-                            //todo 进行匹配
                             break;
 
 
                         case "score":
-                            // TODO: 2023/5/23
                             //  若匹配成功，
                             if (user.matchSocket != null) {
-                                //  todo 每隔一段时间各个客户端向服务器发送自己的得分，服务器将得分同步给另一个客户端。
+                                // 每隔一段时间各个客户端向服务器发送自己的得分，服务器将得分同步给另一个客户端。
                                 int temp_score = jsonObject.getInt("score");
                                 user.score = temp_score;
                                 if (temp_score < 0) {
@@ -343,9 +307,6 @@ public class MyDbServer {
                                     //当我死了之后我得告诉我死了的对手我多少分啊
                                 } else {
                                     user.matchScore = user.matchUser.score;
-//                                PrintWriter poutsc = null;
-//                                    poutsc = new PrintWriter(new BufferedWriter(
-//                                            new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                                     poutsc.println(user.matchScore);  //将输出流包装为打印流
                                     System.out.println("传给客户端 " + user.matchScore);
                                 }
@@ -353,17 +314,6 @@ public class MyDbServer {
 
                             }
 
-                            //选择对战则需等待对手加入
-                            //• 实现联网对战同步对手得分
-                            //• 得分排行榜界面实现（联网）
-
-
-                            //两个客户端和服务器建立连接
-                            //后，若匹配成功，每隔一段时
-                            //间各个客户端向服务器发送自
-                            //己的得分，服务器将得分同步
-                            //给另一个客户端。
-                            //todo 进行匹配
                             break;
                     }
                 }
