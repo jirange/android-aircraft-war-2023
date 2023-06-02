@@ -501,7 +501,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
                 AbstractFlyingObject object = objects.get(i);
                 Bitmap image = object.getImage();
                 assert image != null : objects.getClass().getName() + " has no image! ";
-
                 canvas.drawBitmap(image, object.getLocationX() - image.getWidth() / 2,
                         object.getLocationY() - image.getHeight() / 2, mPaint);
             }
@@ -515,9 +514,6 @@ public abstract class BaseGame extends SurfaceView implements SurfaceHolder.Call
 
         mPaint.setColor(Color.RED);
         mPaint.setTextSize(50);
-//        if (gameOverFlag) {
-//            mPaint.setColor(Color.GRAY);
-//        }
         canvas.drawText("SCORE:" + this.score, x, y, mPaint);
         y = y + 60;
         canvas.drawText("LIFE:" + this.heroAircraft.getHp(), x, y, mPaint);
