@@ -110,32 +110,6 @@ public class MyDB4records {
     }
 
     public static ArrayList<PlayerRecord> getAllUser(int diff){
-//        Connection c = null;
-//        Statement stmt = null;
-//        String condition = " r_difficulty = "+diff+" ORDER BY r_score DESC ";
-//        ArrayList<PlayerRecord> recordsArray = new ArrayList<>();
-//        try {
-//            Class.forName("org.sqlite.JDBC");
-//            c = DriverManager.getConnection("jdbc:sqlite:customer_serve.db");
-//            System.out.println("Opened database successfully");
-//
-//            String sql = String.format("select r_difficulty,r_ranking,r_playerName,r_score,r_recordTime" +
-//                    " from %s where %s;", TABLE_NAME, condition);
-//
-//            stmt = c.createStatement();
-//            ResultSet rs = stmt.executeQuery( sql);
-//            while(rs.next()){
-//                PlayerRecord playerRecord = new PlayerRecord(rs.getInt("r_difficulty"), rs.getInt("r_ranking"), rs.getString("r_playerName"), rs.getInt("r_score"), rs.getString("r_recordTime"));
-//                recordsArray.add(playerRecord);
-//            }
-//            stmt.close();
-//            c.close();
-//        } catch ( Exception e ) {
-//            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-//            System.exit(0);
-//        }
-//        System.out.println("Get all users successfully  by difficulty");
-//        return recordsArray;
         String condition = " r_difficulty = "+diff+" ORDER BY r_score DESC ";
         System.out.println("Get all users successfully  by difficulty");
         return query(condition);

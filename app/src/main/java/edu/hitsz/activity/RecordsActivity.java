@@ -138,20 +138,20 @@ public class RecordsActivity extends AppCompatActivity {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("rank", String.valueOf(i));
                 String playerName = record.getPlayerName();
-                if (playerName.equals(LoginActivity.user.getName())){
-                    map.put("name", record.getPlayerName()+"(自己)");
-                }else if (playerName.equals(LoginActivity.user.matchName)){
-                    map.put("name", record.getPlayerName()+"(对手)");
-                }else {
+                if (GameActivity.online && playerName.equals(LoginActivity.user.getName())) {
+                    map.put("name", record.getPlayerName() + "(自己)");
+                } else if (GameActivity.online && playerName.equals(LoginActivity.user.matchName)) {
+                    map.put("name", record.getPlayerName() + "(对手)");
+                } else {
                     map.put("name", record.getPlayerName());
                 }
                 map.put("score", String.valueOf(record.getScore()));
                 map.put("date", record.getRecordTimeStr());
                 data.add(map);
             }
-            Log.i(TAG,"uploading data:"+ allRecords);
+            Log.i(TAG, "uploading data:" + allRecords);
         } else {
-            Log.i(TAG," no data can upload");
+            Log.i(TAG, " no data can upload");
         }
         return data;
     }
